@@ -3,18 +3,20 @@ import Link from 'next/link';
 import { 
   Users, 
   Stethoscope, 
-  Ambulance, 
+  GitPullRequest, 
   Activity, 
   Building2, 
   ShieldCheck, 
   WifiOff, 
-  Languages 
+  Languages,
+  CalendarClock,
+  ClipboardList
 } from 'lucide-react';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Top Government Banner */}
+      {/* Top Government Header */}
       <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
         <div className="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
           <div className="flex items-center space-x-2">
@@ -30,7 +32,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Main Header */}
+      {/* Main Navigation Bar */}
       <header className="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
@@ -57,7 +59,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center space-y-4">
           <div className="inline-flex items-center space-x-2 bg-teal-100 text-teal-800 text-xs px-3 py-1 rounded-full font-semibold">
             <ShieldCheck className="w-4 h-4" />
-            <span>AI-Assisted Clinical Triage & Care Continuity (Non-Diagnostic)</span>
+            <span>AI-Assisted Clinical Triage & Care Coordination (Non-Diagnostic)</span>
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
@@ -65,39 +67,39 @@ export default function HomePage() {
           </h2>
 
           <p className="text-sm sm:text-base text-slate-700 max-w-2xl mx-auto leading-relaxed">
-            Connecting Citizens, ASHA/ANM field workers, Sub-Centres, PHCs, and District Hospitals across Maharashtra into a unified, offline-resilient care continuum.
+            Coordinating Citizens, ASHA/ANM field workers, Sub-Centres, PHCs, and District Hospitals across Maharashtra into a unified, low-connectivity care continuum.
           </p>
 
-          {/* Core Architectural Highlights */}
+          {/* 4 Core Pillars */}
           <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto text-left">
             <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
               <WifiOff className="w-5 h-5 text-teal-600 mb-1" />
-              <h4 className="text-xs font-bold text-slate-900">Offline-First PWA</h4>
-              <p className="text-[11px] text-slate-600">Zero-connectivity local caching & background sync</p>
+              <h4 className="text-xs font-bold text-slate-900">Offline-First ASHA</h4>
+              <p className="text-[11px] text-slate-600">Zero-connectivity registration & vitals screening</p>
             </div>
             <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
               <Activity className="w-5 h-5 text-red-600 mb-1" />
               <h4 className="text-xs font-bold text-slate-900">Clinical Triage</h4>
-              <p className="text-[11px] text-slate-600">Emergency, Urgent & Routine non-diagnostic tiering</p>
+              <p className="text-[11px] text-slate-600">Emergency, Urgent & Routine priority assist</p>
             </div>
             <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-              <Ambulance className="w-5 h-5 text-amber-600 mb-1" />
+              <GitPullRequest className="w-5 h-5 text-amber-600 mb-1" />
               <h4 className="text-xs font-bold text-slate-900">Closed-Loop Referral</h4>
-              <p className="text-[11px] text-slate-600">PHC to District Hospital with return discharge notes</p>
+              <p className="text-[11px] text-slate-600">Sub-Centre to DH transfer & back-referral notes</p>
             </div>
             <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-              <Building2 className="w-5 h-5 text-blue-600 mb-1" />
-              <h4 className="text-xs font-bold text-slate-900">Facility Visibility</h4>
-              <p className="text-[11px] text-slate-600">Live beds, specialists & emergency services</p>
+              <CalendarClock className="w-5 h-5 text-blue-600 mb-1" />
+              <h4 className="text-xs font-bold text-slate-900">Queue & Follow-Up</h4>
+              <p className="text-[11px] text-slate-600">Triage-ordered OPD & ASHA reminder tasks</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Role-Based Portals */}
+      {/* Role-Based Workspaces */}
       <section className="py-10 px-4 max-w-5xl mx-auto w-full">
-        <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center space-x-2">
-          <span>भूमिका निहाय कार्यप्रवाह (Role-Based Workflows)</span>
+        <h3 className="text-lg font-bold text-slate-900 mb-6">
+          भूमिका निहाय कार्यप्रवाह (Care Coordination Workflows)
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -107,13 +109,13 @@ export default function HomePage() {
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">आशा / एएनएम सेविका (ASHA Workspace)</h4>
+              <h4 className="font-bold text-slate-900 text-base">आशा / एएनएम सेविका (ASHA Field Workspace)</h4>
               <p className="text-xs text-slate-600 mt-1">
-                Offline registration, vitals screening, high-risk pregnancy alerts, and follow-up schedules.
+                Offline patient intake, vitals recording, danger sign alerts, and scheduled home follow-up tasks.
               </p>
             </div>
             <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded">
-              Offline PWA Enabled
+              Offline-First PWA
             </span>
           </div>
 
@@ -123,25 +125,25 @@ export default function HomePage() {
               <Stethoscope className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">वैद्यकीय अधिकारी (Doctor & PHC OPD)</h4>
+              <h4 className="font-bold text-slate-900 text-base">वैद्यकीय अधिकारी (PHC Doctor & OPD Queue)</h4>
               <p className="text-xs text-slate-600 mt-1">
-                Triage-prioritized digital queue, clinical timeline, rural teleconsultation, and e-prescriptions.
+                Triage-prioritized OPD queue, longitudinal health records, diagnostic orders, and rural teleconsultation.
               </p>
             </div>
             <span className="inline-block text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded">
-              Queue & Teleconsult
+              Triage Queue & Teleconsult
             </span>
           </div>
 
-          {/* Referral & Facility */}
+          {/* Referral Coordination */}
           <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">
             <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
-              <Ambulance className="w-5 h-5" />
+              <GitPullRequest className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">संदर्भ सेवा (Closed-Loop Referral)</h4>
+              <h4 className="font-bold text-slate-900 text-base">संदर्भ सेवा (Closed-Loop Referral Tracking)</h4>
               <p className="text-xs text-slate-600 mt-1">
-                Transfer tracking from Sub-Centre to District Hospital, 108 ambulance dispatch, and back-referral.
+                Sub-Centre / PHC to District Hospital transfers, receiving hospital intake, and discharge counter-referral to ASHA.
               </p>
             </div>
             <span className="inline-block text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded">
@@ -157,7 +159,7 @@ export default function HomePage() {
             <div>
               <h4 className="font-bold text-slate-900 text-base">नागरिक सेवा (Citizen Health Portal)</h4>
               <p className="text-xs text-slate-600 mt-1">
-                Longitudinal records, OPD appointment token status, nearby PHC discovery, and health reminders.
+                Longitudinal health timeline, OPD appointment token status, and facility/service discovery.
               </p>
             </div>
             <span className="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded">
@@ -165,32 +167,32 @@ export default function HomePage() {
             </span>
           </div>
 
-          {/* Government Dashboard */}
+          {/* Government / Facility Visibility */}
           <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 md:col-span-2 lg:col-span-2">
             <div className="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">जिल्हा व राज्य नियंत्रण कक्ष (Health Intelligence)</h4>
+              <h4 className="font-bold text-slate-900 text-base">आरोग्य नियंत्रण कक्ष (Facility & District Dashboard)</h4>
               <p className="text-xs text-slate-600 mt-1">
-                Epidemiological surveillance, taluka-level referral bottlenecks, facility bed availability, and maternal health metrics for Maharashtra state health authorities.
+                Taluka-wise referral completion rates, triage urgency distribution, ASHA follow-up compliance, and facility service utilization across Maharashtra districts.
               </p>
             </div>
             <span className="inline-block text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-1 rounded">
-              Real-time Public Health Intelligence
+              Administrative Health Intelligence
             </span>
           </div>
         </div>
       </section>
 
-      {/* Clinical Disclaimer Footer */}
+      {/* Clinical Disclaimer */}
       <footer className="mt-auto bg-slate-100 border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-2">
         <div className="max-w-4xl mx-auto">
           <p className="font-semibold text-slate-700">
             ⚠️ वैधानिक सूचना (Clinical Disclaimer):
           </p>
           <p className="mt-1 text-slate-500 leading-relaxed">
-            CAREGRID Clinical Triage Assist is an assistive decision-support algorithm designed to help certified healthcare workers prioritize clinical urgency in rural Maharashtra. It does NOT replace clinical examination or doctor's diagnosis.
+            CAREGRID Clinical Triage Assist is an assistive decision-support algorithm designed to help certified healthcare workers prioritize clinical urgency in rural Maharashtra. It does NOT diagnose medical conditions or replace clinical examination by a licensed medical officer.
           </p>
           <div className="pt-3 text-slate-400 text-[11px]">
             Smart India Hackathon 2026 • SIH26133 • Government of Maharashtra • Team The Glitch Gang (129855)

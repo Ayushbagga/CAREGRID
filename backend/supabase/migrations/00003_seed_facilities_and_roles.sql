@@ -1,22 +1,19 @@
 -- ==============================================================================
--- CAREGRID: Migration 00003 - Public Facilities & Realistic Seed Data
+-- CAREGRID: Migration 00003 - Public Facilities Directory Seeds (Revised MVP)
 -- SIH26133: Accessibility & Quality of Public Healthcare in Rural/Underserved Areas
 -- Target: Government of Maharashtra (Public Health Department / Arogya Vibhag)
--- NOTE: ALL PATIENT & CLINICAL DATA BELOW IS SYNTHETIC DUMMY DATA FOR TESTING ONLY.
--- ZERO REAL PATIENT IDENTIFIABLE INFORMATION (PII) IS CONTAINED HEREIN.
+-- NOTE: ALL DATA BELOW IS SYNTHETIC TEST SEED DATA. NO REAL PATIENT PII.
 -- ==============================================================================
 
 -- ------------------------------------------------------------------------------
--- 1. Seed Public Health Facilities across Maharashtra Districts
+-- 1. Gadchiroli District Public Facilities (Tribal / Remote Belts)
 -- ------------------------------------------------------------------------------
-
--- Gadchiroli District (Tribal / Forest / Remote Belts)
-INSERT INTO facilities (id, facility_code, name, facility_type, district, taluka, village, pincode, latitude, longitude, total_beds, available_beds, contact_number, emergency_ambulance_number, specialties_available)
+INSERT INTO facilities (id, facility_code, name, facility_type, district, taluka, village, pincode, latitude, longitude, contact_number, operating_hours, services_available, specialties_available)
 VALUES 
 (
     '11111111-0000-0000-0000-000000000001',
     'MAH-GAD-SC-01',
-    'Sub-Centre Reguntha (Arogya Mandir)',
+    'Sub-Centre Reguntha (Ayushman Arogya Mandir)',
     'sub_centre',
     'Gadchiroli',
     'Sironcha',
@@ -24,11 +21,10 @@ VALUES
     '442504',
     18.8682,
     79.9725,
-    2,
-    2,
     '07138-230001',
-    '108',
-    '["Basic First Aid", "ANC Screening", "Immunization", "Rapid Malaria/Sickle Cell Testing"]'::jsonb
+    '9:00 AM - 4:00 PM (Monday - Saturday)',
+    '["MCH Screening", "Immunization", "NCD Vitals Check", "Rapid Diagnostic Kits"]'::jsonb,
+    '["Primary Community Health"]'::jsonb
 ),
 (
     '11111111-0000-0000-0000-000000000002',
@@ -41,11 +37,10 @@ VALUES
     '442710',
     19.3908,
     80.3622,
-    10,
-    4,
     '07134-220012',
-    '108',
-    '["General Medicine", "24/7 Normal Delivery", "Basic Lab Testing", "Emergency Stabilization", "Teleconsultation Room"]'::jsonb
+    '24x7 Emergency & Normal Delivery, 9:00 AM - 4:00 PM OPD',
+    '["General OPD", "24/7 Normal Delivery", "Basic Lab Testing", "Teleconsultation Room", "Emergency Stabilization"]'::jsonb,
+    '["General Medicine", "Obstetrics & Normal Delivery"]'::jsonb
 ),
 (
     '11111111-0000-0000-0000-000000000003',
@@ -58,11 +53,10 @@ VALUES
     '442705',
     19.4121,
     79.9882,
-    50,
-    18,
     '07133-272044',
-    '108',
-    '["Obstetrics & Gynecology", "Pediatrics", "Emergency Surgery", "Blood Storage Unit", "Ultrasound", "Digital X-Ray"]'::jsonb
+    '24x7 Inpatient, Emergency & Surgery',
+    '["Specialist OPD", "Emergency Care", "Ultrasound", "Digital X-Ray", "Blood Storage Unit"]'::jsonb,
+    '["Obstetrics & Gynecology", "Pediatrics", "General Surgery"]'::jsonb
 ),
 (
     '11111111-0000-0000-0000-000000000004',
@@ -75,21 +69,22 @@ VALUES
     '442605',
     20.1849,
     80.0030,
-    300,
-    64,
     '07132-222061',
-    '108',
-    '["ICU / CCU", "NICU / SNCU", "Trauma & Orthopedics", "General Surgery", "Dialysis", "Pathology / CT Scan"]'::jsonb
+    '24x7 Multi-Specialty Hospital',
+    '["Intensive Care Unit (ICU)", "Newborn Care (SNCU)", "Emergency Trauma", "Diagnostic Pathology", "Dialysis Unit"]'::jsonb,
+    '["General Medicine", "Pediatrics", "Gynecology & Obstetrics", "General Surgery", "Orthopedics"]'::jsonb
 )
 ON CONFLICT (facility_code) DO NOTHING;
 
--- Nashik District (Hilly / Rural / Tribal Blocks)
-INSERT INTO facilities (id, facility_code, name, facility_type, district, taluka, village, pincode, latitude, longitude, total_beds, available_beds, contact_number, emergency_ambulance_number, specialties_available)
+-- ------------------------------------------------------------------------------
+-- 2. Nashik District Public Facilities (Hilly / Rural Belts)
+-- ------------------------------------------------------------------------------
+INSERT INTO facilities (id, facility_code, name, facility_type, district, taluka, village, pincode, latitude, longitude, contact_number, operating_hours, services_available, specialties_available)
 VALUES
 (
     '22222222-0000-0000-0000-000000000001',
     'MAH-NSK-SC-01',
-    'Sub-Centre Harsul (Arogya Mandir)',
+    'Sub-Centre Harsul (Ayushman Arogya Mandir)',
     'sub_centre',
     'Nashik',
     'Trimbakeshwar',
@@ -97,11 +92,10 @@ VALUES
     '422204',
     20.0831,
     73.4735,
-    2,
-    1,
     '02594-240010',
-    '108',
-    '["MCH Checkups", "NCD Vitals Screening", "Oral Rehydration", "Child Weighing"]'::jsonb
+    '9:00 AM - 4:00 PM (Monday - Saturday)',
+    '["ANC Checkup", "Infant Weight Tracking", "NCD Screening", "Essential Drug Dispensing"]'::jsonb,
+    '["Community Healthcare"]'::jsonb
 ),
 (
     '22222222-0000-0000-0000-000000000002',
@@ -114,11 +108,10 @@ VALUES
     '422215',
     20.3275,
     73.8966,
-    12,
-    5,
     '02557-221234',
-    '108',
-    '["Primary OPD", "Labor Room", "Cold Chain Immunization", "Sputum Testing", "Basic Biochemistry"]'::jsonb
+    '24x7 Emergency & Delivery, 9:00 AM - 4:00 PM OPD',
+    '["Primary OPD", "Labor Room", "Immunization Cold Chain", "Diagnostic Sputum & Blood Testing", "Telemedicine"]'::jsonb,
+    '["General Medicine", "Maternal Care"]'::jsonb
 ),
 (
     '22222222-0000-0000-0000-000000000003',
@@ -131,11 +124,10 @@ VALUES
     '423501',
     20.4902,
     74.0264,
-    100,
-    32,
     '02592-222345',
-    '108',
-    '["Emergency Medicine", "General Surgery", "Gynecology & C-Section", "Pediatric Inpatient", "Radiology"]'::jsonb
+    '24x7 Secondary Hospital',
+    '["Emergency Medicine", "Cesarean Delivery", "Pediatric Inpatient Unit", "Diagnostic Radiology"]'::jsonb,
+    '["Obstetrics & Gynecology", "Pediatrics", "General Surgery"]'::jsonb
 ),
 (
     '22222222-0000-0000-0000-000000000004',
@@ -148,49 +140,9 @@ VALUES
     '422002',
     19.9975,
     73.7898,
-    500,
-    110,
     '0253-2576106',
-    '108',
-    '["Super Specialty Referral", "Cardiology", "Trauma Center", "Comprehensive Emergency Obstetric and Newborn Care - CEmONC", "Oncology Unit"]'::jsonb
-)
-ON CONFLICT (facility_code) DO NOTHING;
-
--- Pune Rural District
-INSERT INTO facilities (id, facility_code, name, facility_type, district, taluka, village, pincode, latitude, longitude, total_beds, available_beds, contact_number, emergency_ambulance_number, specialties_available)
-VALUES
-(
-    '33333333-0000-0000-0000-000000000001',
-    'MAH-PUN-PHC-01',
-    'Primary Health Centre Junnar',
-    'phc',
-    'Pune',
-    'Junnar',
-    'Junnar Rural',
-    '410502',
-    19.2081,
-    73.8761,
-    10,
-    6,
-    '02132-222111',
-    '108',
-    '["Outpatient Care", "NCD Screening", "Normal Delivery", "DOTS TB Center", "Telemedicine"]'::jsonb
-),
-(
-    '33333333-0000-0000-0000-000000000002',
-    'MAH-PUN-RH-01',
-    'Rural Hospital Manchar',
-    'rural_hospital',
-    'Pune',
-    'Ambegaon',
-    'Manchar',
-    '410503',
-    19.0064,
-    73.9427,
-    30,
-    9,
-    '02133-223400',
-    '108',
-    '["Secondary Care", "Obstetrics & Gynecology", "Pediatrics", "Surgical OPD", "Blood Bank"]'::jsonb
+    '24x7 Tertiary Hospital',
+    '["Emergency Resuscitation", "CEmONC", "ICU / SNCU", "Advanced Diagnostic Lab", "Specialist OPD"]'::jsonb,
+    '["Cardiology", "Neurology", "Pediatrics", "Obstetrics & Gynecology", "General Surgery", "Orthopedics"]'::jsonb
 )
 ON CONFLICT (facility_code) DO NOTHING;

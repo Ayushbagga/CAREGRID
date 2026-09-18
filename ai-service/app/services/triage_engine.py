@@ -13,15 +13,16 @@ class TriageEngine:
     """
     Main orchestration service for clinical decision support.
     Synthesizes vitals, symptoms, and demographic context into standardized triage outputs.
+    Strictly non-diagnostic decision support for healthcare workers and doctors.
     """
 
     @classmethod
     def determine_recommended_specialty(
         cls, request: TriageAssessmentRequest, tier: UrgencyTier, all_red_flags: list
     ) -> Optional[str]:
-        """Suggests appropriate public health medical specialty based on findings."""
+        """Suggests appropriate public health medical specialty based on clinical signals."""
         if request.demographics.is_pregnant:
-            return "Obstetrics & Gynecology (MCH Care)"
+            return "Obstetrics & Gynecology (Maternal Health)"
         if request.demographics.age_years < 12:
             return "Pediatrics"
 
@@ -30,13 +31,13 @@ class TriageEngine:
         combined = f"{flags_text} {symptom_text}"
 
         if any(w in combined for w in ["chest pain", "anginal", "tachycardia", "hypotension", "shock"]):
-            return "Emergency Medicine / Cardiology"
+            return "Emergency Medicine / General Medicine"
         if any(w in combined for w in ["hypoxia", "breathlessness", "respiratory", "tachypnea"]):
-            return "Pulmonology / Critical Care"
+            return "Respiratory Medicine / Critical Care"
         if any(w in combined for w in ["convulsion", "unconscious", "stroke", "paralysis"]):
             return "Neurology / Emergency Medicine"
         if any(w in combined for w in ["trauma", "head injury", "fracture", "burn"]):
-            return "General Surgery / Trauma Care"
+            return "General Surgery"
 
         return "General Medicine (Primary Health Centre OPD)"
 
@@ -46,21 +47,21 @@ class TriageEngine:
     ) -> str:
         """Provides actionable guidance for rural front-line workers and medical officers."""
         if tier == UrgencyTier.EMERGENCY_RED:
-            transport_msg = "Call 108 Emergency Ambulance immediately. " if transport_recommended else ""
+            transfer_notice = "Initiate immediate facility transfer protocol. " if transport_recommended else ""
             return (
-                f"{transport_msg}Immediate doctor stabilization required. "
-                f"Alert nearest receiving facility ({specialty or 'Secondary/Tertiary Hospital'}). "
+                f"{transfer_notice}Urgent Medical Officer evaluation required. "
+                f"Notify receiving facility ({specialty or 'Secondary/Tertiary Hospital'}) of incoming high-urgency patient. "
                 "Keep patient monitored and in recovery position."
             )
         elif tier == UrgencyTier.URGENT_AMBER:
             return (
                 f"Fast-track patient to Primary Health Centre Medical Officer for {specialty or 'clinical review'} "
-                "within 24 to 48 hours. Monitor vital signs and re-evaluate if condition deteriorates."
+                "within 24 to 48 hours. Monitor vital signs and re-evaluate if symptoms progress."
             )
         else:
             return (
-                "Enroll in routine OPD consultation queue. Provide standard preventive counseling, "
-                "dietary advice, and schedule routine community health worker follow-up visit."
+                "Enroll in routine OPD consultation queue. Provide standard health counseling, "
+                "and schedule routine community health worker follow-up visit."
             )
 
     @classmethod

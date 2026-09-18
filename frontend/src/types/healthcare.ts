@@ -4,8 +4,6 @@ export type UserRole =
   | 'anm_worker'
   | 'medical_officer'
   | 'specialist_doctor'
-  | 'pharmacist'
-  | 'lab_technician'
   | 'facility_admin'
   | 'district_officer'
   | 'state_admin';
@@ -16,8 +14,7 @@ export type FacilityType =
   | 'chc'
   | 'rural_hospital'
   | 'sub_district_hosp'
-  | 'district_hospital'
-  | 'medical_college';
+  | 'district_hospital';
 
 export type UrgencyTier =
   | 'emergency_red'
@@ -26,7 +23,6 @@ export type UrgencyTier =
 
 export type ReferralStatus =
   | 'initiated'
-  | 'in_transit'
   | 'acknowledged'
   | 'evaluated'
   | 'admitted'
@@ -41,6 +37,12 @@ export type AppointmentStatus =
   | 'cancelled'
   | 'no_show';
 
+export type FollowUpStatus =
+  | 'pending'
+  | 'completed'
+  | 'missed'
+  | 'cancelled';
+
 export interface Facility {
   id: string;
   facility_code: string;
@@ -49,10 +51,10 @@ export interface Facility {
   district: string;
   taluka: string;
   village?: string;
-  total_beds: number;
-  available_beds: number;
+  pincode?: string;
   contact_number: string;
-  emergency_ambulance_number: string;
+  operating_hours: string;
+  services_available: string[];
   specialties_available: string[];
   is_active: boolean;
 }
@@ -65,7 +67,8 @@ export interface Profile {
   preferred_language: 'mr' | 'hi' | 'en';
   facility_id?: string;
   assigned_village?: string;
-  registration_number?: string;
+  assigned_taluka?: string;
+  assigned_district?: string;
 }
 
 export interface Patient {
@@ -73,7 +76,7 @@ export interface Patient {
   abha_id?: string;
   full_name: string;
   date_of_birth?: string;
-  estimated_age?: number;
+  estimated_age: number;
   gender: 'male' | 'female' | 'other';
   blood_group?: string;
   primary_phone: string;
@@ -102,6 +105,21 @@ export interface Vitals {
   recorded_at: string;
 }
 
+export interface Encounter {
+  id: string;
+  patient_id: string;
+  facility_id?: string;
+  provider_id?: string;
+  encounter_type: 'asha_home_visit' | 'phc_opd' | 'teleconsultation';
+  chief_complaints: string[];
+  clinical_notes?: string;
+  provisional_observations?: string;
+  diagnostic_tests_ordered?: string[];
+  advised_medications?: string[];
+  encounter_date: string;
+  is_synced_from_offline: boolean;
+}
+
 export interface TriageAssessment {
   id?: string;
   urgency_tier: UrgencyTier;
@@ -119,6 +137,7 @@ export interface Referral {
   id: string;
   referral_code: string;
   patient_id: string;
+  encounter_id?: string;
   from_facility_id: string;
   to_facility_id: string;
   referring_officer_id: string;
@@ -126,16 +145,43 @@ export interface Referral {
   referral_reason: string;
   required_specialty: string;
   urgency_tier: UrgencyTier;
-  transport_arranged: boolean;
-  ambulance_tracking_code?: string;
   status: ReferralStatus;
+  discharge_summary?: string;
+  post_discharge_instructions_for_asha?: string;
+  closed_at?: string;
   created_at: string;
   updated_at: string;
 }
 
+export interface Appointment {
+  id: string;
+  patient_id: string;
+  facility_id: string;
+  doctor_id?: string;
+  token_number: number;
+  queue_tier: UrgencyTier;
+  appointment_type: 'physical_opd' | 'rural_teleconsultation';
+  scheduled_date: string;
+  status: AppointmentStatus;
+  webrtc_room_id?: string;
+  created_at: string;
+}
+
+export interface FollowUpTask {
+  id: string;
+  patient_id: string;
+  assigned_asha_id: string;
+  originating_referral_id?: string;
+  task_type: 'post_referral_check' | 'maternal_anc_check' | 'chronic_vitals_check' | 'routine_follow_up';
+  due_date: string;
+  status: FollowUpStatus;
+  completion_notes?: string;
+  completed_at?: string;
+}
+
 export interface OfflineSyncItem {
   id: string;
-  entity_type: 'patient' | 'encounter' | 'vitals' | 'referral';
+  entity_type: 'patient' | 'encounter' | 'vitals' | 'referral' | 'follow_up';
   operation: 'CREATE' | 'UPDATE';
   payload: Record<string, any>;
   created_at: string;
