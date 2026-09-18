@@ -104,20 +104,32 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* ASHA / ANM */}
-          <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center font-bold">
-              <Users className="w-5 h-5" />
+          <Link
+            href="/asha"
+            className="group bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 block"
+          >
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center font-bold">
+                <Users className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
+                उघडा / Open &rarr;
+              </span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">आशा / एएनएम सेविका (ASHA Field Workspace)</h4>
+              <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
+                आशा / एएनएम सेविका (ASHA Field Workspace)
+              </h4>
               <p className="text-xs text-slate-600 mt-1">
                 Offline patient intake, vitals recording, danger sign alerts, and scheduled home follow-up tasks.
               </p>
             </div>
-            <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded">
-              Offline-First PWA
-            </span>
-          </div>
+            <div className="flex items-center space-x-2">
+              <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded">
+                Offline-First PWA Active
+              </span>
+            </div>
+          </Link>
 
           {/* Doctor / PHC */}
           <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">

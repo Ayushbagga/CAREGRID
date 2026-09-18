@@ -2,16 +2,12 @@
 
 import React from 'react';
 import { useNetworkStatus } from '@/hooks/use-network-status';
-import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
-import { translations } from '@/lib/i18n/translations';
+import { useLanguage } from '@/lib/i18n/context';
+import { WifiOff, RefreshCw } from 'lucide-react';
 
-interface OfflineBannerProps {
-  locale?: 'mr' | 'hi' | 'en';
-}
-
-export const OfflineBanner: React.FC<OfflineBannerProps> = ({ locale = 'mr' }) => {
+export const OfflineBanner: React.FC = () => {
   const { isOnline, pendingCount } = useNetworkStatus();
-  const t = translations[locale] || translations.en;
+  const { t } = useLanguage();
 
   if (isOnline && pendingCount === 0) {
     return null;

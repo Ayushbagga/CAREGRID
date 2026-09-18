@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { OfflineBanner } from '@/components/shared/offline-banner';
+import { LanguageProvider } from '@/lib/i18n/context';
 
 export const metadata: Metadata = {
   title: 'CAREGRID: Rural Healthcare Access & Care Coordination',
@@ -28,8 +29,10 @@ export default function RootLayout({
   return (
     <html lang="mr">
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased flex flex-col font-sans">
-        <OfflineBanner locale="mr" />
-        <main className="flex-1">{children}</main>
+        <LanguageProvider>
+          <OfflineBanner />
+          <main className="flex-1">{children}</main>
+        </LanguageProvider>
       </body>
     </html>
   );
