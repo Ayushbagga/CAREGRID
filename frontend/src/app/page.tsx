@@ -132,20 +132,32 @@ export default function HomePage() {
           </Link>
 
           {/* Doctor / PHC */}
-          <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-              <Stethoscope className="w-5 h-5" />
+          <Link
+            href="/doctor"
+            className="group bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 block"
+          >
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                <Stethoscope className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
+                उघडा / Open &rarr;
+              </span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">वैद्यकीय अधिकारी (PHC Doctor & OPD Queue)</h4>
+              <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
+                वैद्यकीय अधिकारी (PHC Doctor & OPD Queue)
+              </h4>
               <p className="text-xs text-slate-600 mt-1">
                 Triage-prioritized OPD queue, longitudinal health records, diagnostic orders, and rural teleconsultation.
               </p>
             </div>
-            <span className="inline-block text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded">
-              Triage Queue & Teleconsult
-            </span>
-          </div>
+            <div className="flex items-center space-x-2">
+              <span className="inline-block text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded">
+                Triage Queue & Teleconsult Active
+              </span>
+            </div>
+          </Link>
 
           {/* Referral Coordination */}
           <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">

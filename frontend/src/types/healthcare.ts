@@ -128,6 +128,7 @@ export interface TriageAssessment {
   vital_anomalies: string[];
   transport_recommended: boolean;
   recommended_specialty?: string;
+  recommended_action?: string;
   clinical_rationale: string;
   non_diagnostic_disclaimer: string;
   assessed_at: string;

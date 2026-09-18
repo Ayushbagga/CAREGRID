@@ -117,7 +117,59 @@ export const translations = {
     syncModalDesc: 'नेटवर्क नसताना जतन केलेल्या नोंदी येथे साठवल्या जातात. इंटरनेट सुरू होताच आपोआप सिंक होतात.',
     pendingItemsCount: 'प्रलंबित नोंदी संख्या',
     noPendingItems: 'सर्व नोंदी सिंक झाल्या आहेत. कोणतीही नोंद प्रलंबित नाही.',
-    manualSyncBtn: 'आता सिंक सुरू करा'
+    manualSyncBtn: 'आता सिंक सुरू करा',
+
+    // SPRINT 3: Doctor, OPD Queue & Triage
+    doctorDashboard: 'वैद्यकीय अधिकारी कक्ष (PHC Doctor Workspace)',
+    facilityLabel: 'आरोग्य संस्था',
+    opdQueueTab: 'डिजिटल ओपीडी रांग (OPD Queue)',
+    facilityDiscoveryTab: 'आरोग्य सुविधा शोध (Facilities)',
+    teleconsultTab: 'टेलिकन्सल्टेशन (Teleconsult)',
+    queueSummary: 'आजची ओपीडी रांग स्थिती',
+    inQueueCount: 'प्रतीक्षेत रुग्ण',
+    inConsultCount: 'तपासणी सुरू',
+    completedCount: 'तपासणी पूर्ण',
+    tokenNumberCol: 'टोकन क्र.',
+    patientCol: 'रुग्णाचे नाव व माहिती',
+    urgencyCol: 'प्राधान्य श्रेणी (Triage)',
+    actionCol: 'कृती (Action)',
+    callPatientBtn: 'रुग्णास बोलवा',
+    startConsultBtn: 'तपासणी सुरू करा',
+    completeConsultBtn: 'तपासणी पूर्ण करा',
+    openTeleconsultBtn: 'टेलिकन्सल्ट करा',
+    emptyQueueMsg: 'सध्या ओपीडी रांगेत कोणतेही रुग्ण प्रतीक्षेत नाहीत.',
+    generateTokenBtn: '+ ओपीडी टोकन काढा',
+
+    // Triage Card
+    triageCardTitle: 'क्लिनिकल प्रायॉरिटी सहाय्य (Non-Diagnostic Triage)',
+    urgencyPriorityScore: 'प्राधान्यता क्रम',
+    detectedAnomalies: 'आढळलेली धोक्याची लक्षणे',
+    recommendedSpecialty: 'शिफारस केलेली वैद्यकीय शाखा',
+    recommendedAction: 'पुढील कृती शिफारस',
+    doctorOverrideBtn: 'वैद्यकीय अधिकारी पुष्टी / बदल (Doctor Review)',
+    overrideModalTitle: 'वैद्यकीय अधिकारी प्राधान्य बदल (Human-in-the-Loop)',
+    confirmTierBtn: 'श्रेणी निश्चित करा',
+
+    // Facility Discovery
+    facilityDirectoryTitle: 'सार्वजनिक आरोग्य संस्था शोध व सेवा माहिती',
+    facilitySearchPlaceholder: 'नाव, तालुका, किंवा सेवा शोधा (उदा. रक्ततपासणी, प्रसूती)...',
+    filterAllDistricts: 'सर्व जिल्हे',
+    filterAllTypes: 'सर्व संस्था प्रकार',
+    operatingHoursLabel: 'वेळ',
+    servicesOfferedLabel: 'उपलब्ध सेवा',
+    specialtiesLabel: 'वैद्यकीय शाखा',
+    contactFacilityBtn: 'संपर्क साधा',
+    bookOpdTokenBtn: 'ओपीडी टोकन मिळवा',
+
+    // Teleconsultation
+    teleconsultTitle: 'ग्रामीण टेलिकन्सल्टेशन कक्ष (Rural Teleconsult)',
+    teleconsultSub: 'प्राथमिक आरोग्य केंद्र ते जिल्हा रुग्णालय तज्ज्ञ डॉक्टर थेट संवाद',
+    connectedSpecialist: 'जोडलेले तज्ज्ञ: डॉ. विकास साळवे (MD Medicine, जिल्हा रुग्णालय)',
+    callActive: 'टेलिकन्सल्टेशन कॉल सुरू आहे (सुरक्षित WebRTC)',
+    clinicalSummaryTitle: 'रुग्ण शारीरिक तपासणी सारांश (Live Summary)',
+    consultNotesLabel: 'तज्ज्ञ डॉक्टरांचा सल्ला व निरीक्षणे',
+    consultNotesPlaceholder: 'तपासणी निष्कर्ष, औषध सल्ला व मार्गदर्शन येथे नोंदवा...',
+    endConsultBtn: 'टेलिकन्सल्ट समाप्त करा व ओपीडीकडे वळा'
   },
 
   hi: {
@@ -236,7 +288,59 @@ export const translations = {
     syncModalDesc: 'बिना नेटवर्क के सहेजे गए रिकॉर्ड यहाँ सुरक्षित रहते हैं और इंटरनेट आते ही स्वतः अपलोड हो जाते हैं।',
     pendingItemsCount: 'लंबित रिकॉर्ड्स की संख्या',
     noPendingItems: 'सभी रिकॉर्ड्स सिंक हो चुके हैं। कोई लंबित कार्य नहीं है।',
-    manualSyncBtn: 'अभी सिंक शुरू करें'
+    manualSyncBtn: 'अभी सिंक शुरू करें',
+
+    // SPRINT 3: Doctor, OPD Queue & Triage
+    doctorDashboard: 'चिकित्सा अधिकारी कक्ष (PHC Doctor Workspace)',
+    facilityLabel: 'स्वास्थ्य केंद्र',
+    opdQueueTab: 'डिजिटल ओपीडी कतार (OPD Queue)',
+    facilityDiscoveryTab: 'स्वास्थ्य सुविधाएं खोजें (Facilities)',
+    teleconsultTab: 'टेलीकंसल्टेशन (Teleconsult)',
+    queueSummary: 'आज की ओपीडी कतार स्थिति',
+    inQueueCount: 'प्रतीक्षारत मरीज',
+    inConsultCount: 'जांच जारी',
+    completedCount: 'जांच संपन्न',
+    tokenNumberCol: 'टोकन सं.',
+    patientCol: 'मरीज का नाम एवं विवरण',
+    urgencyCol: 'प्राथमिकता श्रेणी (Triage)',
+    actionCol: 'कार्रवाई (Action)',
+    callPatientBtn: 'मरीज बुलाएं',
+    startConsultBtn: 'जांच शुरू करें',
+    completeConsultBtn: 'जांच पूरी करें',
+    openTeleconsultBtn: 'टेलीकंसल्ट करें',
+    emptyQueueMsg: 'वर्तमान में ओपीडी कतार में कोई मरीज प्रतीक्षारत नहीं है।',
+    generateTokenBtn: '+ ओपीडी टोकन जारी करें',
+
+    // Triage Card
+    triageCardTitle: 'क्लिनिकल प्राथमिकता सहायता (Non-Diagnostic Triage)',
+    urgencyPriorityScore: 'प्राथमिकता क्रम',
+    detectedAnomalies: 'पाए गए खतरे के संकेत',
+    recommendedSpecialty: 'अनुशंसित विशेषज्ञता',
+    recommendedAction: 'अनुशंसित कार्रवाई',
+    doctorOverrideBtn: 'चिकित्सक पुष्टि / संशोधन (Doctor Review)',
+    overrideModalTitle: 'चिकित्सक द्वारा प्राथमिकता समीक्षा (Human-in-the-Loop)',
+    confirmTierBtn: 'श्रेणी पुष्टि करें',
+
+    // Facility Discovery
+    facilityDirectoryTitle: 'सार्वजनिक स्वास्थ्य सुविधाएं एवं उपलब्ध सेवाएं',
+    facilitySearchPlaceholder: 'नाम, तालुका या सेवा से खोजें (उदा. प्रसव, रक्त जांच)...',
+    filterAllDistricts: 'सभी ज़िले',
+    filterAllTypes: 'सभी सुविधा प्रकार',
+    operatingHoursLabel: 'समय',
+    servicesOfferedLabel: 'उपलब्ध सेवाएं',
+    specialtiesLabel: 'विशेषज्ञताएं',
+    contactFacilityBtn: 'संपर्क करें',
+    bookOpdTokenBtn: 'ओपीडी टोकन प्राप्त करें',
+
+    // Teleconsultation
+    teleconsultTitle: 'ग्रामीण टेलीकंसल्टेशन कक्ष (Rural Teleconsult)',
+    teleconsultSub: 'प्राथमिक स्वास्थ्य केंद्र से जिला अस्पताल विशेषज्ञ डॉक्टर सीधा परामर्श',
+    connectedSpecialist: 'संबद्ध विशेषज्ञ: डॉ. विकास साळवे (MD Medicine, जिला अस्पताल)',
+    callActive: 'टेलीकंसल्टेशन कॉल सक्रिय है (सुरक्षित WebRTC)',
+    clinicalSummaryTitle: 'मरीज स्वास्थ्य जांच सारांश (Live Summary)',
+    consultNotesLabel: 'विशेषज्ञ डॉक्टर का परामर्श एवं टिप्पणी',
+    consultNotesPlaceholder: 'जांच निष्कर्ष, दवा मार्गदर्शन एवं सलाह यहाँ लिखें...',
+    endConsultBtn: 'टेलीकंसल्ट समाप्त करें और ओपीडी में लौटें'
   },
 
   en: {
@@ -355,6 +459,58 @@ export const translations = {
     syncModalDesc: 'Records captured without cellular network are stored securely in local device storage and synchronized upon connection.',
     pendingItemsCount: 'Pending Records Awaiting Sync',
     noPendingItems: 'All records are synchronized. No pending items.',
-    manualSyncBtn: 'Trigger Sync Now'
+    manualSyncBtn: 'Trigger Sync Now',
+
+    // SPRINT 3: Doctor, OPD Queue & Triage
+    doctorDashboard: 'PHC Medical Officer Workspace',
+    facilityLabel: 'Health Facility',
+    opdQueueTab: 'Digital OPD Queue',
+    facilityDiscoveryTab: 'Facility & Service Discovery',
+    teleconsultTab: 'Rural Teleconsultation',
+    queueSummary: "Today's OPD Queue Status",
+    inQueueCount: 'In Queue',
+    inConsultCount: 'In Consultation',
+    completedCount: 'Consultation Done',
+    tokenNumberCol: 'Token #',
+    patientCol: 'Patient Details',
+    urgencyCol: 'Triage Urgency Tier',
+    actionCol: 'Action',
+    callPatientBtn: 'Call Patient',
+    startConsultBtn: 'Start Consultation',
+    completeConsultBtn: 'Complete Consultation',
+    openTeleconsultBtn: 'Launch Teleconsult',
+    emptyQueueMsg: 'No patients currently waiting in the OPD queue.',
+    generateTokenBtn: '+ Generate OPD Token',
+
+    // Triage Card
+    triageCardTitle: 'Clinical Urgency & Priority Support (Non-Diagnostic)',
+    urgencyPriorityScore: 'Priority Rating',
+    detectedAnomalies: 'Identified Red Flags & Danger Signs',
+    recommendedSpecialty: 'Recommended Clinical Specialty',
+    recommendedAction: 'Recommended Action for Clinician',
+    doctorOverrideBtn: 'Doctor Review / Confirm Tier',
+    overrideModalTitle: 'Clinician Urgency Review (Human-in-the-Loop)',
+    confirmTierBtn: 'Confirm Urgency Tier',
+
+    // Facility Discovery
+    facilityDirectoryTitle: 'Public Health Facility & Service Directory',
+    facilitySearchPlaceholder: 'Search by name, taluka or services (e.g. delivery, lab testing)...',
+    filterAllDistricts: 'All Districts',
+    filterAllTypes: 'All Facility Types',
+    operatingHoursLabel: 'Hours',
+    servicesOfferedLabel: 'Available Services',
+    specialtiesLabel: 'Clinical Specialties',
+    contactFacilityBtn: 'Contact Facility',
+    bookOpdTokenBtn: 'Get OPD Token',
+
+    // Teleconsultation
+    teleconsultTitle: 'Rural Teleconsultation Room',
+    teleconsultSub: 'Direct video/audio link between PHC Medical Officer and District Specialist',
+    connectedSpecialist: 'Connected Specialist: Dr. Vikas Salve (MD Medicine, District Hospital)',
+    callActive: 'Teleconsultation Session Active (Encrypted WebRTC)',
+    clinicalSummaryTitle: 'Live Patient Vitals & Clinical Summary',
+    consultNotesLabel: 'Specialist Clinical Advice & Notes',
+    consultNotesPlaceholder: 'Enter specialist guidance, diagnostic advice and recommendations...',
+    endConsultBtn: 'End Teleconsultation & Return to Queue'
   }
 };
