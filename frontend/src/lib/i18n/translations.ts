@@ -12,11 +12,18 @@ export const translations = {
     roleDoctor: 'वैद्यकीय अधिकारी (PHC/CHC)',
     roleCitizen: 'नागरिक / रुग्ण',
     roleReferral: 'संदर्भ सेवा (Referral)',
-    roleAdmin: 'जिल्हा / राज्य नियंत्रण कक्ष',
+    roleAdmin: 'जिल्हा / राज्य नियंत्रण कक्ष (नियोजित क्षमता)',
     triageEmergency: 'तात्काळ (Emergency Red)',
     triageUrgent: 'तातडीचे (Urgent Amber)',
     triageRoutine: 'नियमित (Routine Green)',
-    disclaimer: 'सूचना: एआय प्रणाली केवळ वैद्यकीय कर्मचाऱ्यांना प्राधान्य ठरवण्यात मदत करते, निदान करत नाही.'
+    disclaimer: 'सूचना: एआय प्रणाली केवळ आरोग्य कर्मचाऱ्यांना प्राधान्य ठरवण्यात मदत करते, निदान करत नाही.',
+    referralCreated: 'संदर्भ सेवा नोंदणीकृत (Referral Initiated)',
+    referralAcknowledged: 'रुग्णालयाने स्वीकारले (Acknowledged)',
+    referralCompleted: 'उपचार पूर्ण (Completed)',
+    followUpDue: 'गृहभेटीची नियोजित तारीख',
+    followUpCompleted: 'पाठपुरावा पूर्ण',
+    opdQueueTitle: 'ओपीडी रांग व टोकन',
+    plannedAdminNotice: 'टीप: तालुका/जिल्हा प्रशासकीय डॅशबोर्ड ही नियोजित क्षमता आहे.'
   },
   hi: {
     appTitle: 'केयरग्रिड (CAREGRID)',
@@ -29,11 +36,18 @@ export const translations = {
     roleDoctor: 'चिकित्सा अधिकारी (PHC/CHC)',
     roleCitizen: 'नागरिक / मरीज',
     roleReferral: 'रेफरल प्रबंधन',
-    roleAdmin: 'जिला / राज्य डैशबोर्ड',
+    roleAdmin: 'जिला / राज्य डैशबोर्ड (नियोजित क्षमता)',
     triageEmergency: 'आपातकालीन (Emergency Red)',
     triageUrgent: 'अति आवश्यक (Urgent Amber)',
     triageRoutine: 'सामान्य (Routine Green)',
-    disclaimer: 'सूचना: एआई प्रणाली केवल स्वास्थ्य कर्मियों को प्राथमिकता तय करने में सहायता करती है, निदान नहीं करती।'
+    disclaimer: 'सूचना: एआई प्रणाली केवल स्वास्थ्य कर्मियों को प्राथमिकता तय करने में सहायता करती है, निदान नहीं करती।',
+    referralCreated: 'रेफरल दर्ज किया गया (Referral Initiated)',
+    referralAcknowledged: 'अस्पताल द्वारा स्वीकृत (Acknowledged)',
+    referralCompleted: 'उपचार पूर्ण (Completed)',
+    followUpDue: 'फॉलो-अप देय तिथि',
+    followUpCompleted: 'फॉलो-अप पूर्ण',
+    opdQueueTitle: 'ओपीडी कतार एवं टोकन',
+    plannedAdminNotice: 'सूचना: तालुका/जिला प्रशासनिक डैशबोर्ड एक नियोजित क्षमता है।'
   },
   en: {
     appTitle: 'CAREGRID',
@@ -46,10 +60,17 @@ export const translations = {
     roleDoctor: 'PHC / CHC Medical Officer',
     roleCitizen: 'Citizen / Patient',
     roleReferral: 'Referral Coordination',
-    roleAdmin: 'District / State Dashboard',
+    roleAdmin: 'District / State Dashboard (Planned Capability)',
     triageEmergency: 'Emergency (Red Tier)',
     triageUrgent: 'Urgent (Amber Tier)',
     triageRoutine: 'Routine (Green Tier)',
-    disclaimer: 'Notice: AI assists healthcare staff in clinical prioritization; it does NOT formulate diagnoses.'
+    disclaimer: 'Notice: AI assists healthcare staff in clinical prioritization; it does NOT formulate diagnoses.',
+    referralCreated: 'Referral Initiated',
+    referralAcknowledged: 'Acknowledged by Receiving Facility',
+    referralCompleted: 'Care Completed & Closed-Loop',
+    followUpDue: 'Follow-up Due Date',
+    followUpCompleted: 'Follow-up Completed',
+    opdQueueTitle: 'Digital OPD Queue & Tokens',
+    plannedAdminNotice: 'Notice: Taluka/District administrative dashboard is a planned capability.'
   }
 };
