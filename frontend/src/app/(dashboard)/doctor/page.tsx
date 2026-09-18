@@ -8,13 +8,19 @@ import { FacilityDiscoveryView } from '@/components/facilities/facility-discover
 import { TeleconsultRoom } from '@/components/teleconsult/teleconsult-room';
 import { TriageAssessmentCard } from '@/components/triage/triage-assessment-card';
 import { TriageService } from '@/lib/ai-client/triage-service';
+import { ReferralManager } from '@/components/referrals/referral-manager';
+import { ReferralCreateModal } from '@/components/referrals/referral-create-modal';
+import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
+import { PatientService } from '@/lib/offline-sync/patient-service';
 import { 
   Stethoscope, 
   ListOrdered, 
   Building2, 
   Video, 
   ArrowLeft,
-  Activity
+  Activity,
+  GitPullRequest,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import type { Patient, Appointment, TriageAssessment, Facility } from '@/types/healthcare';
@@ -23,10 +29,12 @@ export default function DoctorDashboardPage() {
   const { t, locale, setLocale } = useLanguage();
   const { isOnline } = useNetworkStatus();
 
-  const [activeTab, setActiveTab] = useState<'queue' | 'facilities' | 'teleconsult'>('queue');
+  const [activeTab, setActiveTab] = useState<'queue' | 'facilities' | 'teleconsult' | 'referrals'>('queue');
   const [activeTeleconsultPatient, setActiveTeleconsultPatient] = useState<Patient | null>(null);
   const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null);
   const [triageAssessment, setTriageAssessment] = useState<TriageAssessment | null>(null);
+  const [selectedPatientForReferral, setSelectedPatientForReferral] = useState<Patient | null>(null);
+  const [selectedPatientForRecord, setSelectedPatientForRecord] = useState<string | null>(null);
 
   const PHC_FACILITY_ID = '11111111-0000-0000-0000-000000000002'; // PHC Bhamragad
 
@@ -149,6 +157,19 @@ export default function DoctorDashboardPage() {
             <Video className="w-4 h-4" />
             <span>{t.teleconsultTab}</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('referrals')}
+            className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-colors ${
+              activeTab === 'referrals'
+                ? 'bg-teal-600 text-white shadow-sm'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <GitPullRequest className="w-4 h-4" />
+            <span>{t.referralTrackingTitle}</span>
+          </button>
         </div>
 
         {/* Tab 1: OPD Queue */}
@@ -207,7 +228,45 @@ export default function DoctorDashboardPage() {
             )}
           </div>
         )}
+
+        {/* Tab 4: Closed-Loop Referral Tracking */}
+        {activeTab === 'referrals' && (
+          <ReferralManager
+            currentFacilityId="fac-001"
+            onInitiateNewReferral={async () => {
+              const patients = await PatientService.getPatients();
+              if (patients.length > 0) setSelectedPatientForReferral(patients[0]);
+            }}
+            onViewHealthRecord={patientId => setSelectedPatientForRecord(patientId)}
+          />
+        )}
       </main>
+
+      {/* Referral Creation Modal */}
+      {selectedPatientForReferral && (
+        <ReferralCreateModal
+          isOpen={true}
+          onClose={() => setSelectedPatientForReferral(null)}
+          patient={selectedPatientForReferral}
+          currentFacilityId="fac-001"
+          onReferralCreated={() => {
+            setSelectedPatientForReferral(null);
+            setActiveTab('referrals');
+          }}
+        />
+      )}
+
+      {/* Patient Longitudinal Health Record Modal */}
+      {selectedPatientForRecord && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="max-w-3xl w-full">
+            <LongitudinalHealthRecord
+              patientId={selectedPatientForRecord}
+              onClose={() => setSelectedPatientForRecord(null)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

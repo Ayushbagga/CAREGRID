@@ -160,36 +160,60 @@ export default function HomePage() {
           </Link>
 
           {/* Referral Coordination */}
-          <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
-              <GitPullRequest className="w-5 h-5" />
+          <Link
+            href="/referrals"
+            className="group bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 block"
+          >
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                <GitPullRequest className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
+                उघडा / Open &rarr;
+              </span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">संदर्भ सेवा (Closed-Loop Referral Tracking)</h4>
+              <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
+                संदर्भ सेवा (Closed-Loop Referral Tracking)
+              </h4>
               <p className="text-xs text-slate-600 mt-1">
                 Sub-Centre / PHC to District Hospital transfers, receiving hospital intake, and discharge counter-referral to ASHA.
               </p>
             </div>
-            <span className="inline-block text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded">
-              Closed-Loop Tracking
-            </span>
-          </div>
+            <div className="flex items-center space-x-2">
+              <span className="inline-block text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded">
+                Closed-Loop Tracking Active
+              </span>
+            </div>
+          </Link>
 
           {/* Citizen */}
-          <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-              <Activity className="w-5 h-5" />
+          <Link
+            href="/citizen"
+            className="group bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 block"
+          >
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                <Activity className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
+                उघडा / Open &rarr;
+              </span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">नागरिक सेवा (Citizen Health Portal)</h4>
+              <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
+                नागरिक सेवा (Citizen Health Portal)
+              </h4>
               <p className="text-xs text-slate-600 mt-1">
                 Longitudinal health timeline, OPD appointment token status, and facility/service discovery.
               </p>
             </div>
-            <span className="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded">
-              ABHA Ready
-            </span>
-          </div>
+            <div className="flex items-center space-x-2">
+              <span className="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded">
+                ABHA & Health Timeline Active
+              </span>
+            </div>
+          </Link>
 
           {/* Government / Facility Visibility */}
           <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 md:col-span-2 lg:col-span-2">

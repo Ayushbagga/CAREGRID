@@ -1,4 +1,4 @@
-﻿import Dexie, { type Table } from 'dexie';
+import Dexie, { type Table } from 'dexie';
 import type { Patient, Vitals, Facility, Referral, FollowUpTask, Appointment, OfflineSyncItem } from '@/types/healthcare';
 
 export interface LocalEncounter {
@@ -23,11 +23,11 @@ export class CareGridOfflineDatabase extends Dexie {
 
   constructor() {
     super('CareGridOfflineDB');
-    this.version(2).stores({
+    this.version(3).stores({
       localPatients: 'id, village, taluka, abha_id, is_pregnant',
       localEncounters: 'id, patient_id, created_at, is_synced',
       localAppointments: 'id, facility_id, patient_id, scheduled_date, queue_tier, status',
-      localReferrals: 'id, referral_code, patient_id, status',
+      localReferrals: 'id, referral_code, patient_id, status, from_facility_id, to_facility_id',
       localFollowUpTasks: 'id, patient_id, assigned_asha_id, status, due_date',
       cachedFacilities: 'id, district, facility_type',
       syncQueue: 'id, entity_type, status, created_at'

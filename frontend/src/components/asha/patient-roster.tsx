@@ -9,11 +9,13 @@ import type { Patient } from '@/types/healthcare';
 interface PatientRosterProps {
   onSelectForScreening?: (patientId: string) => void;
   onNewRegistration?: () => void;
+  onViewRecord?: (patientId: string) => void;
 }
 
 export const PatientRoster: React.FC<PatientRosterProps> = ({
   onSelectForScreening,
-  onNewRegistration
+  onNewRegistration,
+  onViewRecord
 }) => {
   const { t } = useLanguage();
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -141,9 +143,19 @@ export const PatientRoster: React.FC<PatientRosterProps> = ({
               {/* Contact Footer */}
               <div className="pt-2 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
                 <span className="flex items-center"><Phone className="w-3 h-3 mr-1 text-slate-400" />{patient.primary_phone}</span>
-                {patient.abha_id && (
-                  <span className="text-[10px] bg-teal-50 text-teal-800 px-1.5 py-0.5 rounded">ABHA Linked</span>
-                )}
+                <div className="flex items-center space-x-2">
+                  {onViewRecord && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onViewRecord(patient.id); }}
+                      className="text-[11px] font-bold text-teal-700 hover:underline"
+                    >
+                      {t.viewHealthRecordBtn}
+                    </button>
+                  )}
+                  {patient.abha_id && (
+                    <span className="text-[10px] bg-teal-50 text-teal-800 px-1.5 py-0.5 rounded">ABHA Linked</span>
+                  )}
+                </div>
               </div>
             </div>
           ))}

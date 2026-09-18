@@ -7,6 +7,8 @@ import { PatientService } from '@/lib/offline-sync/patient-service';
 import { PatientIntakeForm } from '@/components/asha/patient-intake-form';
 import { VitalsScreeningForm } from '@/components/asha/vitals-screening-form';
 import { PatientRoster } from '@/components/asha/patient-roster';
+import { AshaFollowUpList } from '@/components/asha/asha-follow-up-list';
+import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { SyncStatusModal } from '@/components/asha/sync-status-modal';
 import { 
   Users, 
@@ -24,8 +26,9 @@ export default function AshaDashboardPage() {
   const { t, locale, setLocale } = useLanguage();
   const { isOnline, pendingCount, refreshPendingCount } = useNetworkStatus();
 
-  const [activeTab, setActiveTab] = useState<'roster' | 'intake' | 'screening'>('roster');
+  const [activeTab, setActiveTab] = useState<'roster' | 'intake' | 'screening' | 'followups'>('roster');
   const [selectedPatientIdForScreening, setSelectedPatientIdForScreening] = useState<string | undefined>();
+  const [selectedPatientIdForRecord, setSelectedPatientIdForRecord] = useState<string | undefined>();
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
 
   const [stats, setStats] = useState({
@@ -178,6 +181,18 @@ export default function AshaDashboardPage() {
             <Activity className="w-4 h-4" />
             <span>{t.recordVitalsBtn}</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('followups')}
+            className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-colors ${
+              activeTab === 'followups'
+                ? 'bg-teal-600 text-white shadow-sm'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <HeartHandshake className="w-4 h-4" />
+            <span>{t.followUpTasksTitle}</span>
+          </button>
         </div>
 
         {activeTab === 'roster' && (
@@ -187,6 +202,7 @@ export default function AshaDashboardPage() {
               setActiveTab('screening');
             }}
             onNewRegistration={() => setActiveTab('intake')}
+            onViewRecord={patientId => setSelectedPatientIdForRecord(patientId)}
           />
         )}
 
@@ -210,7 +226,26 @@ export default function AshaDashboardPage() {
             onCancel={() => setActiveTab('roster')}
           />
         )}
+
+        {activeTab === 'followups' && (
+          <AshaFollowUpList
+            ashaId="asha-001"
+            onViewHealthRecord={patientId => setSelectedPatientIdForRecord(patientId)}
+          />
+        )}
       </main>
+
+      {/* Patient Longitudinal Health Record Modal */}
+      {selectedPatientIdForRecord && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="max-w-3xl w-full">
+            <LongitudinalHealthRecord
+              patientId={selectedPatientIdForRecord}
+              onClose={() => setSelectedPatientIdForRecord(undefined)}
+            />
+          </div>
+        </div>
+      )}
 
       <SyncStatusModal
         isOpen={isSyncModalOpen}
