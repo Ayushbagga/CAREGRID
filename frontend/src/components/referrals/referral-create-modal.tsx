@@ -120,7 +120,7 @@ export function ReferralCreateModal({
             <select
               value={toFacilityId}
               onChange={e => setToFacilityId(e.target.value)}
-              className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+              className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
               required
             >
               {facilities.map(f => (
@@ -140,7 +140,7 @@ export function ReferralCreateModal({
               <select
                 value={specialty}
                 onChange={e => setSpecialty(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
               >
                 <option value="Obstetrics & Gynecology">Obstetrics & Gynecology (स्त्रीरोग व प्रसूती)</option>
                 <option value="Pediatrics & Neonatology">Pediatrics (बालरोग विभाग)</option>
@@ -157,7 +157,7 @@ export function ReferralCreateModal({
               <select
                 value={urgencyTier}
                 onChange={e => setUrgencyTier(e.target.value as UrgencyTier)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
               >
                 <option value="emergency_red">🔴 {t.triageEmergency} (Immediate Transfer)</option>
                 <option value="urgent_amber">🟡 {t.triageUrgent} (Transfer within 24h)</option>
@@ -176,7 +176,7 @@ export function ReferralCreateModal({
               onChange={e => setReason(e.target.value)}
               rows={3}
               placeholder="Clinical reason, current vitals, danger signs observed, and reason secondary/tertiary care is required..."
-              className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+              className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none"
               required
             />
           </div>

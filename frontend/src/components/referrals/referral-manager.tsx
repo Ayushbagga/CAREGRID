@@ -202,14 +202,14 @@ export function ReferralManager({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search code, patient, specialty..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-500 focus:outline-none"
             />
           </div>
 
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="text-xs py-1.5 px-2.5 rounded-lg border border-slate-200 bg-white focus:outline-hidden font-medium text-slate-700"
+            className="text-xs py-1.5 px-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none font-medium text-slate-700"
           >
             <option value="all">सर्व स्थिती (All)</option>
             <option value="initiated">Initiated</option>
@@ -427,7 +427,7 @@ export function ReferralManager({
                     onChange={e => setEvaluationNotes(e.target.value)}
                     rows={3}
                     placeholder="Enter specialist findings, bedside observations, or lab test results..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+                    className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none"
                     required
                   />
                 </div>
@@ -442,7 +442,7 @@ export function ReferralManager({
                       onChange={e => setDischargeSummary(e.target.value)}
                       rows={2}
                       placeholder={t.dischargeSummaryPlaceholder}
-                      className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+                      className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none"
                       required
                     />
                   </div>
@@ -456,7 +456,7 @@ export function ReferralManager({
                       onChange={e => setAshaInstructions(e.target.value)}
                       rows={3}
                       placeholder={t.instructionsForAshaPlaceholder}
-                      className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+                      className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none"
                       required
                     />
                     <p className="text-[11px] text-teal-800 mt-1">

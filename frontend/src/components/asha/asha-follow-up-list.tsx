@@ -341,7 +341,7 @@ export function AshaFollowUpList({ ashaId = 'asha-001', onViewHealthRecord }: As
                   onChange={e => setCompletionNotes(e.target.value)}
                   rows={3}
                   placeholder={t.homeVisitNotesPlaceholder}
-                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
+                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   required
                 />
               </div>

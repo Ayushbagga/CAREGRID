@@ -24,6 +24,9 @@ const config: Config = {
           routine: "#16a34a",
         }
       },
+      boxShadow: {
+        xs: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      },
     },
   },
   plugins: [],

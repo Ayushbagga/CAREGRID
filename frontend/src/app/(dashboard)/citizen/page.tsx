@@ -87,7 +87,7 @@ export default function CitizenPortalPage() {
               <select
                 value={selectedPatientId}
                 onChange={e => setSelectedPatientId(e.target.value)}
-                className="text-xs bg-slate-50 border border-slate-200 rounded-lg py-1 px-2 font-semibold text-slate-800 focus:outline-hidden"
+                className="text-xs bg-slate-50 border border-slate-200 rounded-lg py-1 px-2 font-semibold text-slate-800 focus:outline-none"
               >
                 {patients.map(p => (
                   <option key={p.id} value={p.id}>
