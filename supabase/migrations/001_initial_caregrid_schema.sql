@@ -13,17 +13,9 @@
 -- -----------------------------------------------------------------------------
 -- SECTION 1: EXTENSIONS & SCHEMAS
 -- -----------------------------------------------------------------------------
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- PostgreSQL 13+ native gen_random_uuid() is built-in; pgcrypto enabled if needed.
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Ensure search_path includes both public and extensions schemas (standard in Supabase)
-SET search_path TO public, extensions;
-
--- Guarantee uuid_generate_v4() is resolvable in public schema across all PostgreSQL / Supabase environments
-CREATE OR REPLACE FUNCTION public.uuid_generate_v4()
-RETURNS uuid AS $$
-  SELECT gen_random_uuid();
-$$ LANGUAGE sql;
 
 
 -- -----------------------------------------------------------------------------
@@ -122,7 +114,7 @@ CREATE TABLE IF NOT EXISTS public.roles (
 
 -- 2. Facilities
 CREATE TABLE IF NOT EXISTS public.facilities (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
   facility_type caregrid_facility_type NOT NULL,
   district VARCHAR(100) NOT NULL,
@@ -139,7 +131,7 @@ CREATE TABLE IF NOT EXISTS public.facilities (
 
 -- 3. Users Profile (Linked to Supabase auth.users or application credentials)
 CREATE TABLE IF NOT EXISTS public.users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   role_id VARCHAR(32) NOT NULL REFERENCES public.roles(id) ON DELETE RESTRICT,
   facility_id UUID REFERENCES public.facilities(id) ON DELETE SET NULL,
   full_name VARCHAR(150) NOT NULL,
@@ -155,7 +147,7 @@ CREATE TABLE IF NOT EXISTS public.users (
 
 -- 4. Facility Services Catalog
 CREATE TABLE IF NOT EXISTS public.facility_services (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   facility_id UUID NOT NULL REFERENCES public.facilities(id) ON DELETE CASCADE,
   service_code VARCHAR(50) NOT NULL,
   service_name VARCHAR(150) NOT NULL,
@@ -170,7 +162,7 @@ CREATE TABLE IF NOT EXISTS public.facility_services (
 
 -- 5. Patients (Neutral Identifier CARE-MH-YYYY-XXXX)
 CREATE TABLE IF NOT EXISTS public.patients (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   care_id VARCHAR(30) NOT NULL UNIQUE,
   first_name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
@@ -198,7 +190,7 @@ CREATE TABLE IF NOT EXISTS public.patients (
 
 -- 6. Health Records (Longitudinal Care Summary, 1:1 with Patient)
 CREATE TABLE IF NOT EXISTS public.health_records (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL UNIQUE REFERENCES public.patients(id) ON DELETE CASCADE,
   blood_group VARCHAR(10),
   allergies TEXT[] NOT NULL DEFAULT '{}',
@@ -211,7 +203,7 @@ CREATE TABLE IF NOT EXISTS public.health_records (
 
 -- 7. Encounters (Community & Facility Clinical Touchpoints)
 CREATE TABLE IF NOT EXISTS public.encounters (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   facility_id UUID REFERENCES public.facilities(id) ON DELETE SET NULL,
   provider_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
@@ -228,7 +220,7 @@ CREATE TABLE IF NOT EXISTS public.encounters (
 
 -- 8. Triage Assessments (Assistive, Rule-Based, Strictly Non-Diagnostic)
 CREATE TABLE IF NOT EXISTS public.triage_assessments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   encounter_id UUID REFERENCES public.encounters(id) ON DELETE CASCADE,
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   assessed_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
@@ -254,7 +246,7 @@ CREATE TABLE IF NOT EXISTS public.triage_assessments (
 
 -- 9. Appointments
 CREATE TABLE IF NOT EXISTS public.appointments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   facility_id UUID NOT NULL REFERENCES public.facilities(id) ON DELETE RESTRICT,
   provider_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
@@ -270,7 +262,7 @@ CREATE TABLE IF NOT EXISTS public.appointments (
 
 -- 10. Queues (Priority-Sorted OPD Queues: Emergency Red Fast-Tracked)
 CREATE TABLE IF NOT EXISTS public.queues (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   facility_id UUID NOT NULL REFERENCES public.facilities(id) ON DELETE CASCADE,
   appointment_id UUID REFERENCES public.appointments(id) ON DELETE SET NULL,
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
@@ -287,7 +279,7 @@ CREATE TABLE IF NOT EXISTS public.queues (
 
 -- 11. Consultations & Teleconsultation Sessions
 CREATE TABLE IF NOT EXISTS public.consultations (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   encounter_id UUID REFERENCES public.encounters(id) ON DELETE CASCADE,
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   provider_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
@@ -307,7 +299,7 @@ CREATE TABLE IF NOT EXISTS public.consultations (
 
 -- 12. Referrals (Closed-Loop Referral Tracking)
 CREATE TABLE IF NOT EXISTS public.referrals (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   referral_tracking_code VARCHAR(50) NOT NULL UNIQUE,
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   source_facility_id UUID NOT NULL REFERENCES public.facilities(id) ON DELETE RESTRICT,
@@ -331,7 +323,7 @@ CREATE TABLE IF NOT EXISTS public.referrals (
 
 -- 13. Diagnostics (Point-of-Care Testing)
 CREATE TABLE IF NOT EXISTS public.diagnostics (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   encounter_id UUID REFERENCES public.encounters(id) ON DELETE CASCADE,
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   facility_id UUID NOT NULL REFERENCES public.facilities(id) ON DELETE RESTRICT,
@@ -351,7 +343,7 @@ CREATE TABLE IF NOT EXISTS public.diagnostics (
 
 -- 14. Services & Essential Medicines Availability
 CREATE TABLE IF NOT EXISTS public.services_availability (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   facility_id UUID NOT NULL REFERENCES public.facilities(id) ON DELETE CASCADE,
   item_type VARCHAR(30) NOT NULL CHECK (item_type IN ('medicine', 'diagnostic', 'service')),
   item_code VARCHAR(50) NOT NULL,
@@ -367,7 +359,7 @@ CREATE TABLE IF NOT EXISTS public.services_availability (
 
 -- 15. Follow-Ups (Post-Referral & Maternal Care Continuity Tasks)
 CREATE TABLE IF NOT EXISTS public.follow_ups (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   patient_id UUID NOT NULL REFERENCES public.patients(id) ON DELETE CASCADE,
   referral_id UUID REFERENCES public.referrals(id) ON DELETE SET NULL,
   assigned_asha_id UUID NOT NULL REFERENCES public.users(id) ON DELETE RESTRICT,
@@ -386,7 +378,7 @@ CREATE TABLE IF NOT EXISTS public.follow_ups (
 
 -- 16. Multilingual Notifications (Trilingual EN, HI, MR)
 CREATE TABLE IF NOT EXISTS public.notifications (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   recipient_user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
   patient_id UUID REFERENCES public.patients(id) ON DELETE CASCADE,
   title VARCHAR(200) NOT NULL,
@@ -426,7 +418,7 @@ CREATE TABLE IF NOT EXISTS public.schemes (
 
 -- 19. Scheme Guidance (Trilingual Document Checklists)
 CREATE TABLE IF NOT EXISTS public.scheme_guidance (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   scheme_id VARCHAR(50) NOT NULL REFERENCES public.schemes(id) ON DELETE CASCADE,
   language VARCHAR(5) NOT NULL CHECK (language IN ('en', 'hi', 'mr')),
   eligibility_criteria TEXT[] NOT NULL DEFAULT '{}',
@@ -438,7 +430,7 @@ CREATE TABLE IF NOT EXISTS public.scheme_guidance (
 
 -- 20. Offline Sync Events (Idempotent Mutation Queue Processing)
 CREATE TABLE IF NOT EXISTS public.offline_sync_events (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   client_event_id UUID NOT NULL,
   entity_table VARCHAR(50) NOT NULL,
