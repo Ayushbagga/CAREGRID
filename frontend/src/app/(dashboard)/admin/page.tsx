@@ -102,6 +102,12 @@ export default function AdminDashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-6 flex-1 w-full space-y-5">
+        {/* Planned Capability Notice */}
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 text-xs text-purple-900 flex items-center space-x-2.5 shadow-xs">
+          <ShieldCheck className="w-4 h-4 text-purple-600 shrink-0" />
+          <span className="font-medium">{t.plannedAdminNotice}</span>
+        </div>
+
         {/* District Filter Pill Bar */}
         <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center space-x-2 text-xs font-bold text-slate-700">

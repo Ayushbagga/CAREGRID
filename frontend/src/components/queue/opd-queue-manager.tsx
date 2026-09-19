@@ -113,6 +113,12 @@ export const OPDQueueManager: React.FC<OPDQueueManagerProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* AI Triage Non-Diagnostic Disclaimer Banner */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 flex items-center space-x-2.5 shadow-xs">
+        <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+        <span className="font-medium">{t.disclaimer}</span>
+      </div>
+
       {/* Top Header & Metrics */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
         <div>
