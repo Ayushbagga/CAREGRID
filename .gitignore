@@ -9,6 +9,7 @@ package-lock.json.bak
 out/
 build/
 dist/
+*.tsbuildinfo
 
 # Python / FastAPI
 __pycache__/
