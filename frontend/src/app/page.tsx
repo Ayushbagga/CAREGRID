@@ -216,20 +216,32 @@ export default function HomePage() {
           </Link>
 
           {/* Government / Facility Visibility */}
-          <div className="bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 md:col-span-2 lg:col-span-2">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
-              <Building2 className="w-5 h-5" />
+          <Link
+            href="/admin"
+            className="group bg-white p-5 rounded-xl border border-slate-200 hover:border-teal-400 hover:shadow-md transition-all space-y-3 block md:col-span-2 lg:col-span-2"
+          >
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
+                उघडा / Open &rarr;
+              </span>
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 text-base">आरोग्य नियंत्रण कक्ष (Facility & District Dashboard)</h4>
+              <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
+                आरोग्य नियंत्रण कक्ष (Facility & District Dashboard)
+              </h4>
               <p className="text-xs text-slate-600 mt-1">
                 Taluka-wise referral completion rates, triage urgency distribution, ASHA follow-up compliance, and facility service utilization across Maharashtra districts.
               </p>
             </div>
-            <span className="inline-block text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-1 rounded">
-              Administrative Health Intelligence
-            </span>
-          </div>
+            <div className="flex items-center space-x-2">
+              <span className="inline-block text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-1 rounded">
+                Care Continuum Analytics Active
+              </span>
+            </div>
+          </Link>
         </div>
       </section>
 
