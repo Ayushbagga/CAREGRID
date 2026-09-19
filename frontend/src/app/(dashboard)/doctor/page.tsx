@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { useNetworkStatus } from '@/hooks/use-network-status';
 import { OPDQueueManager } from '@/components/queue/opd-queue-manager';
 import { FacilityDiscoveryView } from '@/components/facilities/facility-discovery-view';
@@ -82,35 +83,7 @@ export default function DoctorDashboardPage() {
               {isOnline ? 'Online' : 'Offline Mode'}
             </span>
 
-            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
-              <button
-                type="button"
-                onClick={() => setLocale('mr')}
-                className={`px-2 py-1 rounded font-bold transition-colors ${
-                  locale === 'mr' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                मराठी
-              </button>
-              <button
-                type="button"
-                onClick={() => setLocale('hi')}
-                className={`px-2 py-1 rounded font-bold transition-colors ${
-                  locale === 'hi' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                हिंदी
-              </button>
-              <button
-                type="button"
-                onClick={() => setLocale('en')}
-                className={`px-2 py-1 rounded font-bold transition-colors ${
-                  locale === 'en' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                EN
-              </button>
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>

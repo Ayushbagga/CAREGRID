@@ -6,23 +6,25 @@ import { translations, SupportedLocale } from './translations';
 interface LanguageContextType {
   locale: SupportedLocale;
   setLocale: (loc: SupportedLocale) => void;
-  t: typeof translations['mr'];
+  t: typeof translations['en'];
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-  locale: 'mr',
+  locale: 'en',
   setLocale: () => {},
-  t: translations['mr']
+  t: translations['en']
 });
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocaleState] = useState<SupportedLocale>('mr');
+  const [locale, setLocaleState] = useState<SupportedLocale>('en');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('caregrid_locale') as SupportedLocale;
       if (saved && (saved === 'mr' || saved === 'hi' || saved === 'en')) {
         setLocaleState(saved);
+      } else {
+        setLocaleState('en');
       }
     }
   }, []);
@@ -34,7 +36,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const t = translations[locale] || translations['mr'];
+  const t = translations[locale] || translations['en'];
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale, t }}>

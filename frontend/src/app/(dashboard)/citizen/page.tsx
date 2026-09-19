@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { PatientService } from '@/lib/offline-sync/patient-service';
 import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { PatientRemindersModal } from '@/components/records/patient-reminders-modal';
@@ -96,22 +97,7 @@ export default function CitizenPortalPage() {
               </select>
             )}
 
-            <div className="flex items-center space-x-1 text-xs bg-slate-100 p-1 rounded-lg border border-slate-200">
-              <Languages className="w-3.5 h-3.5 text-slate-500 ml-1" />
-              {(['mr', 'hi', 'en'] as const).map(lang => (
-                <button
-                  key={lang}
-                  onClick={() => setLocale(lang)}
-                  className={`px-2 py-0.5 rounded text-xs font-bold transition-all ${
-                    locale === lang
-                      ? 'bg-teal-600 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {lang === 'mr' ? 'मराठी' : lang === 'hi' ? 'हिंदी' : 'EN'}
-                </button>
-              ))}
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>

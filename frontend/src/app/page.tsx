@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { 
@@ -8,21 +10,23 @@ import {
   Building2, 
   ShieldCheck, 
   WifiOff, 
-  Languages,
-  CalendarClock,
-  ClipboardList
+  CalendarClock
 } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/context';
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 
 export default function HomePage() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Government Header */}
       <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
         <div className="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-white">महाराष्ट्र शासन</span>
+            <span className="font-semibold text-white">{t.homeGovState}</span>
             <span className="text-slate-500">|</span>
-            <span>सार्वजनिक आरोग्य विभाग (Arogya Vibhag)</span>
+            <span>{t.homeGovDept}</span>
           </div>
           <div className="flex items-center space-x-4 text-slate-400">
             <span>SIH26133</span>
@@ -33,23 +37,20 @@ export default function HomePage() {
       </div>
 
       {/* Main Navigation Bar */}
-      <header className="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40">
+      <header className="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40 shadow-xs">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-lg bg-teal-600 text-white flex items-center justify-center font-black text-xl shadow-md">
               CG
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 leading-tight">केअरग्रिड / CAREGRID</h1>
-              <p className="text-xs text-slate-600">Rural Healthcare Access & Care Coordination</p>
+              <h1 className="text-xl font-bold text-slate-900 leading-tight">{t.appTitle}</h1>
+              <p className="text-xs text-slate-600">{t.appSubtitle}</p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1 text-xs bg-slate-100 px-3 py-1.5 rounded-md text-slate-700">
-              <Languages className="w-3.5 h-3.5 text-slate-500" />
-              <span className="font-medium">मराठी / EN</span>
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>
@@ -59,38 +60,38 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center space-y-4">
           <div className="inline-flex items-center space-x-2 bg-teal-100 text-teal-800 text-xs px-3 py-1 rounded-full font-semibold">
             <ShieldCheck className="w-4 h-4" />
-            <span>AI-Assisted Clinical Triage & Care Coordination (Non-Diagnostic)</span>
+            <span>{t.homeHeroBadge}</span>
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
-            ग्रामीण भागातील प्रत्येक नागरिकासाठी वेळेवर व दर्जेदार आरोग्य सेवा
+            {t.homeHeroTitle}
           </h2>
 
           <p className="text-sm sm:text-base text-slate-700 max-w-2xl mx-auto leading-relaxed">
-            Coordinating Citizens, ASHA/ANM field workers, Sub-Centres, PHCs, and District Hospitals across Maharashtra into a unified, low-connectivity care continuum.
+            {t.homeHeroSubtitle}
           </p>
 
           {/* 4 Core Pillars */}
           <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto text-left">
-            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
               <WifiOff className="w-5 h-5 text-teal-600 mb-1" />
-              <h4 className="text-xs font-bold text-slate-900">Offline-First ASHA</h4>
-              <p className="text-[11px] text-slate-600">Zero-connectivity registration & vitals screening</p>
+              <h4 className="text-xs font-bold text-slate-900">{t.homePillarOfflineTitle}</h4>
+              <p className="text-[11px] text-slate-600">{t.homePillarOfflineDesc}</p>
             </div>
-            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
               <Activity className="w-5 h-5 text-red-600 mb-1" />
-              <h4 className="text-xs font-bold text-slate-900">Clinical Triage</h4>
-              <p className="text-[11px] text-slate-600">Emergency, Urgent & Routine priority assist</p>
+              <h4 className="text-xs font-bold text-slate-900">{t.homePillarTriageTitle}</h4>
+              <p className="text-[11px] text-slate-600">{t.homePillarTriageDesc}</p>
             </div>
-            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
               <GitPullRequest className="w-5 h-5 text-amber-600 mb-1" />
-              <h4 className="text-xs font-bold text-slate-900">Closed-Loop Referral</h4>
-              <p className="text-[11px] text-slate-600">Sub-Centre to DH transfer & back-referral notes</p>
+              <h4 className="text-xs font-bold text-slate-900">{t.homePillarReferralTitle}</h4>
+              <p className="text-[11px] text-slate-600">{t.homePillarReferralDesc}</p>
             </div>
-            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
               <CalendarClock className="w-5 h-5 text-blue-600 mb-1" />
-              <h4 className="text-xs font-bold text-slate-900">Queue & Follow-Up</h4>
-              <p className="text-[11px] text-slate-600">Triage-ordered OPD & ASHA reminder tasks</p>
+              <h4 className="text-xs font-bold text-slate-900">{t.homePillarQueueTitle}</h4>
+              <p className="text-[11px] text-slate-600">{t.homePillarQueueDesc}</p>
             </div>
           </div>
         </div>
@@ -99,7 +100,7 @@ export default function HomePage() {
       {/* Role-Based Workspaces */}
       <section className="py-10 px-4 max-w-5xl mx-auto w-full">
         <h3 className="text-lg font-bold text-slate-900 mb-6">
-          भूमिका निहाय कार्यप्रवाह (Care Coordination Workflows)
+          {t.homeWorkflowsTitle}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -113,20 +114,20 @@ export default function HomePage() {
                 <Users className="w-5 h-5" />
               </div>
               <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
-                उघडा / Open &rarr;
+                {t.homeOpenPortalBtn}
               </span>
             </div>
             <div>
               <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
-                आशा / एएनएम सेविका (ASHA Field Workspace)
+                {t.homeAshaRoleTitle}
               </h4>
               <p className="text-xs text-slate-600 mt-1">
-                Offline patient intake, vitals recording, danger sign alerts, and scheduled home follow-up tasks.
+                {t.homeAshaRoleDesc}
               </p>
             </div>
             <div className="flex items-center space-x-2">
               <span className="inline-block text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded">
-                Offline-First PWA Active
+                {t.homeAshaRoleBadge}
               </span>
             </div>
           </Link>
@@ -141,20 +142,20 @@ export default function HomePage() {
                 <Stethoscope className="w-5 h-5" />
               </div>
               <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
-                उघडा / Open &rarr;
+                {t.homeOpenPortalBtn}
               </span>
             </div>
             <div>
               <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
-                वैद्यकीय अधिकारी (PHC Doctor & OPD Queue)
+                {t.homeDoctorRoleTitle}
               </h4>
               <p className="text-xs text-slate-600 mt-1">
-                Triage-prioritized OPD queue, longitudinal health records, diagnostic orders, and rural teleconsultation.
+                {t.homeDoctorRoleDesc}
               </p>
             </div>
             <div className="flex items-center space-x-2">
               <span className="inline-block text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded">
-                Triage Queue & Teleconsult Active
+                {t.homeDoctorRoleBadge}
               </span>
             </div>
           </Link>
@@ -169,20 +170,20 @@ export default function HomePage() {
                 <GitPullRequest className="w-5 h-5" />
               </div>
               <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
-                उघडा / Open &rarr;
+                {t.homeOpenPortalBtn}
               </span>
             </div>
             <div>
               <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
-                संदर्भ सेवा (Closed-Loop Referral Tracking)
+                {t.homeReferralRoleTitle}
               </h4>
               <p className="text-xs text-slate-600 mt-1">
-                Sub-Centre / PHC to District Hospital transfers, receiving hospital intake, and discharge counter-referral to ASHA.
+                {t.homeReferralRoleDesc}
               </p>
             </div>
             <div className="flex items-center space-x-2">
               <span className="inline-block text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded">
-                Closed-Loop Tracking Active
+                {t.homeReferralRoleBadge}
               </span>
             </div>
           </Link>
@@ -197,20 +198,20 @@ export default function HomePage() {
                 <Activity className="w-5 h-5" />
               </div>
               <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
-                उघडा / Open &rarr;
+                {t.homeOpenPortalBtn}
               </span>
             </div>
             <div>
               <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
-                नागरिक सेवा (Citizen Health Portal)
+                {t.homeCitizenRoleTitle}
               </h4>
               <p className="text-xs text-slate-600 mt-1">
-                Longitudinal health timeline, OPD appointment token status, and facility/service discovery.
+                {t.homeCitizenRoleDesc}
               </p>
             </div>
             <div className="flex items-center space-x-2">
               <span className="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded">
-                Health ID & Timeline Active
+                {t.homeCitizenRoleBadge}
               </span>
             </div>
           </Link>
@@ -225,20 +226,20 @@ export default function HomePage() {
                 <Building2 className="w-5 h-5" />
               </div>
               <span className="text-xs font-bold text-teal-700 group-hover:underline flex items-center">
-                उघडा / Open &rarr;
+                {t.homeOpenPortalBtn}
               </span>
             </div>
             <div>
               <h4 className="font-bold text-slate-900 text-base group-hover:text-teal-700 transition-colors">
-                आरोग्य नियंत्रण कक्ष (Facility & District Dashboard)
+                {t.homeAdminRoleTitle}
               </h4>
               <p className="text-xs text-slate-600 mt-1">
-                Taluka-wise referral completion rates, triage urgency distribution, ASHA follow-up compliance, and facility service utilization across Maharashtra districts.
+                {t.homeAdminRoleDesc}
               </p>
             </div>
             <div className="flex items-center space-x-2">
               <span className="inline-block text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-1 rounded">
-                Care Continuum Analytics Active
+                {t.homeAdminRoleBadge}
               </span>
             </div>
           </Link>
@@ -249,13 +250,13 @@ export default function HomePage() {
       <footer className="mt-auto bg-slate-100 border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-2">
         <div className="max-w-4xl mx-auto">
           <p className="font-semibold text-slate-700">
-            ⚠️ वैधानिक सूचना (Clinical Disclaimer):
+            {t.homeDisclaimerHeading}
           </p>
           <p className="mt-1 text-slate-500 leading-relaxed">
-            CAREGRID Clinical Triage Assist is an assistive decision-support algorithm designed to help certified healthcare workers prioritize clinical urgency in rural Maharashtra. It does NOT diagnose medical conditions or replace clinical examination by a licensed medical officer.
+            {t.homeDisclaimerBody}
           </p>
           <div className="pt-3 text-slate-400 text-[11px]">
-            Smart India Hackathon 2026 • SIH26133 • Government of Maharashtra • Team The Glitch Gang (129855)
+            {t.homeFooterTeamMeta}
           </div>
         </div>
       </footer>

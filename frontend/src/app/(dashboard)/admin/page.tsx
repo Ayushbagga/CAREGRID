@@ -8,6 +8,7 @@ import { ReferralMetricsPanel } from '@/components/analytics/referral-metrics-pa
 import { TriageDistributionChart } from '@/components/analytics/triage-distribution-chart';
 import { FacilityReadinessPanel } from '@/components/analytics/facility-readiness-panel';
 import { FollowUpAdherencePanel } from '@/components/analytics/follow-up-adherence-panel';
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { 
   Building2, 
   GitPullRequest, 
@@ -94,22 +95,7 @@ export default function AdminDashboardPage() {
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
 
-            <div className="flex items-center space-x-1 text-xs bg-slate-100 p-1 rounded-lg border border-slate-200">
-              <Languages className="w-3.5 h-3.5 text-slate-500 ml-1" />
-              {(['mr', 'hi', 'en'] as const).map(lang => (
-                <button
-                  key={lang}
-                  onClick={() => setLocale(lang)}
-                  className={`px-2 py-0.5 rounded text-xs font-bold transition-all ${
-                    locale === lang
-                      ? 'bg-teal-600 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {lang === 'mr' ? 'मराठी' : lang === 'hi' ? 'हिंदी' : 'EN'}
-                </button>
-              ))}
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>
