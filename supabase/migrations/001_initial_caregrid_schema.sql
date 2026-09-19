@@ -16,6 +16,16 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- Ensure search_path includes both public and extensions schemas (standard in Supabase)
+SET search_path TO public, extensions;
+
+-- Guarantee uuid_generate_v4() is resolvable in public schema across all PostgreSQL / Supabase environments
+CREATE OR REPLACE FUNCTION public.uuid_generate_v4()
+RETURNS uuid AS $$
+  SELECT gen_random_uuid();
+$$ LANGUAGE sql;
+
+
 -- -----------------------------------------------------------------------------
 -- SECTION 2: ENUMS & DOMAINS
 -- -----------------------------------------------------------------------------
