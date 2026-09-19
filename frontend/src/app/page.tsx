@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
+import { CareGridSymbol } from '@/components/shared/caregrid-logo';
 
 export default function HomePage() {
   const { t } = useLanguage();
@@ -40,9 +41,7 @@ export default function HomePage() {
       <header className="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40 shadow-xs">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-lg bg-teal-600 text-white flex items-center justify-center font-black text-xl shadow-md">
-              CG
-            </div>
+            <CareGridSymbol className="w-10 h-10" />
             <div>
               <h1 className="text-xl font-bold text-slate-900 leading-tight">{t.appTitle}</h1>
               <p className="text-xs text-slate-600">{t.appSubtitle}</p>

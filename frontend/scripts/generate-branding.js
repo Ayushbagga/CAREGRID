@@ -42,7 +42,6 @@ function createPng(width, height, drawFn) {
   ihdrData.writeUInt8(0, 12); // non-interlaced
   const ihdr = makeChunk('IHDR', ihdrData);
 
-  // Scanlines with filter byte 0
   const rawData = Buffer.alloc(height * (1 + width * 4));
   for (let y = 0; y < height; y++) {
     const rowOffset = y * (1 + width * 4);
@@ -62,19 +61,18 @@ function createPng(width, height, drawFn) {
   return Buffer.concat([sig, ihdr, idat, iend]);
 }
 
-// CAREGRID Branding Pixel Renderer
-// Primary Teal: #0d9488 to #0f766e
-function drawCareGridIcon(x, y, w, h) {
+// Concept 01: The Care Matrix Shield (Approved Standalone Symbol)
+function drawCareGridSymbol(x, y, w, h) {
   const nx = x / w;
   const ny = y / h;
 
-  // Outer rounded squircle margin (4%)
+  // Outer margin (4%)
   const margin = 0.04;
   if (nx < margin || nx > 1 - margin || ny < margin || ny > 1 - margin) {
-    return [0, 0, 0, 0]; // transparent outer margin
+    return [0, 0, 0, 0];
   }
 
-  // Corner radius calculation (~22%)
+  // Squircle rounded corners (~22%)
   const r = 0.22;
   const cx = nx < 0.5 ? margin + r : 1 - margin - r;
   const cy = ny < 0.5 ? margin + r : 1 - margin - r;
@@ -88,36 +86,70 @@ function drawCareGridIcon(x, y, w, h) {
     inCorner = dist > r - 0.02;
   }
 
-  // Base Teal gradient: #0d9488 to #0f766e
+  // Base Teal gradient: #0d9488 (13, 148, 136) to #0f766e (15, 118, 110)
   const t = (nx + ny) / 2;
   let bgR = Math.round(13 + (15 - 13) * t);
   let bgG = Math.round(148 + (118 - 148) * t);
   let bgB = Math.round(136 + (110 - 136) * t);
   let bgA = inCorner ? 180 : 255;
 
-  // Medical Cross & Grid Accent (Top Right)
-  const inCrossVert = nx >= 0.76 && nx <= 0.82 && ny >= 0.12 && ny <= 0.30;
-  const inCrossHoriz = nx >= 0.70 && nx <= 0.88 && ny >= 0.18 && ny <= 0.24;
-  if (inCrossVert || inCrossHoriz) {
-    return [255, 255, 255, 240];
+  // Geometry Coordinates
+  // Shield Canopy Outline
+  // Equation approximation for outer shield:
+  // Top arch from y=0.14 to 0.46, tapering down to point at (0.5, 0.86)
+  const sx = Math.abs(nx - 0.5) / 0.32; // normalized distance from vertical center
+  let shieldEdgeY = 0;
+  if (sx <= 1.0) {
+    if (ny < 0.46) {
+      // Upper dome
+      shieldEdgeY = 0.14 + (1 - Math.sqrt(Math.max(0, 1 - sx * sx))) * 0.12;
+    } else {
+      // Lower taper
+      shieldEdgeY = 0.46 + sx * 0.38;
+    }
   }
 
-  // Center Healthcare Cross + Care Grid
-  const inMainCrossVert = nx >= 0.40 && nx <= 0.60 && ny >= 0.32 && ny <= 0.72;
-  const inMainCrossHoriz = nx >= 0.22 && nx <= 0.78 && ny >= 0.42 && ny <= 0.62;
+  const distToShield = Math.abs(ny - shieldEdgeY);
+  const onShieldArc = sx <= 1.05 && distToShield < 0.035 && ny >= 0.14 && ny <= 0.86;
 
-  // Grid node points
-  const nodeDist1 = Math.hypot(nx - 0.28, ny - 0.36);
-  const nodeDist2 = Math.hypot(nx - 0.28, ny - 0.68);
-  const inNode = nodeDist1 < 0.06 || nodeDist2 < 0.06;
+  // Vertical Protective Spine: x in [0.47, 0.53], y in [0.22, 0.78]
+  const onVertSpine = Math.abs(nx - 0.5) <= 0.035 && ny >= 0.22 && ny <= 0.78;
 
-  // Bottom care-grid connecting dots
-  const dot1 = Math.hypot(nx - 0.32, ny - 0.82) < 0.035;
-  const dot2 = Math.hypot(nx - 0.50, ny - 0.82) < 0.045;
-  const dot3 = Math.hypot(nx - 0.68, ny - 0.82) < 0.035;
+  // Horizontal Referral Loop: center at y=0.48, x in [0.26, 0.74]
+  // Loop ellipse equation: ((nx - 0.5) / 0.24)^2 + ((ny - 0.48) / 0.12)^2 ≈ 1
+  const hx = (nx - 0.5) / 0.24;
+  const hy = (ny - 0.48) / 0.12;
+  const loopDist = Math.abs(Math.sqrt(hx * hx + hy * hy) - 1.0);
+  const onHorizLoop = loopDist < 0.22 && Math.abs(nx - 0.5) <= 0.26;
 
-  if (inMainCrossVert || inMainCrossHoriz || inNode || dot1 || dot2 || dot3) {
+  // Coordinate Nodes
+  // Central Luminous Nexus Node: (0.5, 0.48)
+  const distCenter = Math.hypot(nx - 0.5, ny - 0.48);
+  if (distCenter <= 0.075) {
+    if (distCenter <= 0.035) {
+      return [13, 148, 136, 255]; // Inner teal iris
+    }
+    return [255, 255, 255, 255]; // Outer white glow
+  }
+
+  // Peripheral Coordinate Nodes
+  const distLeft = Math.hypot(nx - 0.26, ny - 0.48);
+  const distRight = Math.hypot(nx - 0.74, ny - 0.48);
+  const distTop = Math.hypot(nx - 0.5, ny - 0.22);
+  const distBottom = Math.hypot(nx - 0.5, ny - 0.78);
+
+  if (distLeft <= 0.048 || distRight <= 0.048 || distTop <= 0.048 || distBottom <= 0.048) {
     return [255, 255, 255, 255];
+  }
+
+  // Draw lines
+  if (onVertSpine || onHorizLoop) {
+    return [255, 255, 255, 250];
+  }
+
+  // Shield teal glow
+  if (onShieldArc) {
+    return [94, 234, 212, 230]; // Mint glow (#5eead4)
   }
 
   return [bgR, bgG, bgB, bgA];
@@ -127,8 +159,8 @@ function drawCareGridIcon(x, y, w, h) {
 function createIco(pngBuffers) {
   const count = pngBuffers.length;
   const header = Buffer.alloc(6);
-  header.writeUInt16LE(0, 0); // reserved
-  header.writeUInt16LE(1, 2); // 1 = ICO
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
   header.writeUInt16LE(count, 4);
 
   const dirEntries = [];
@@ -138,12 +170,12 @@ function createIco(pngBuffers) {
     const entry = Buffer.alloc(16);
     entry.writeUInt8(item.width >= 256 ? 0 : item.width, 0);
     entry.writeUInt8(item.height >= 256 ? 0 : item.height, 1);
-    entry.writeUInt8(0, 2); // color palette count
-    entry.writeUInt8(0, 3); // reserved
-    entry.writeUInt16LE(1, 4); // color planes
-    entry.writeUInt16LE(32, 6); // bpp
-    entry.writeUInt32LE(item.buffer.length, 8); // size
-    entry.writeUInt32LE(offset, 12); // offset
+    entry.writeUInt8(0, 2);
+    entry.writeUInt8(0, 3);
+    entry.writeUInt16LE(1, 4);
+    entry.writeUInt16LE(32, 6);
+    entry.writeUInt32LE(item.buffer.length, 8);
+    entry.writeUInt32LE(offset, 12);
     dirEntries.push(entry);
     offset += item.buffer.length;
   }
@@ -155,49 +187,64 @@ function createIco(pngBuffers) {
   ]);
 }
 
-// 1. Generate SVG Icon
+// 1. Generate Approved SVG Icon (The Care Matrix Shield)
 const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="cg-teal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="cg-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#0d9488"/>
       <stop offset="100%" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="cg-shield-glow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="cg-white-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ccfbf1"/>
     </linearGradient>
     <filter id="cg-shadow" x="-10%" y="-10%" width="120%" height="120%">
       <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#0f172a" flood-opacity="0.3"/>
     </filter>
   </defs>
-  <!-- Background Rounded Square -->
-  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#cg-teal-grad)" filter="url(#cg-shadow)"/>
+  <!-- Background Rounded Squircle -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#cg-bg-grad)" filter="url(#cg-shadow)"/>
   
-  <!-- Subtle Medical Health Cross Accent in Top-Right -->
-  <path d="M47 8h5v5h5v5h-5v5h-5v-5h-5v-5h5z" fill="#ffffff" opacity="0.35"/>
+  <!-- Protective Shield Canopy -->
+  <path d="M32 9 C43 9, 52 15, 52 29 C52 42, 41 51, 32 55 C23 51, 12 42, 12 29 C12 15, 21 9, 32 9 Z" 
+        stroke="url(#cg-shield-glow)" stroke-width="2.5" stroke-linecap="round" fill="#0f766e" fill-opacity="0.3"/>
   
-  <!-- Primary Brand CG Monogram -->
-  <text x="31" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="29" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="-1">CG</text>
-  
-  <!-- Care Coordination Micro-Grid at Bottom -->
-  <circle cx="21" cy="53" r="2.2" fill="#ffffff" opacity="0.5"/>
-  <circle cx="32" cy="53" r="2.8" fill="#ffffff" opacity="0.9"/>
-  <circle cx="43" cy="53" r="2.2" fill="#ffffff" opacity="0.5"/>
-  <line x1="23" y1="53" x2="29" y2="53" stroke="#ffffff" stroke-width="1.2" opacity="0.5"/>
-  <line x1="35" y1="53" x2="41" y2="53" stroke="#ffffff" stroke-width="1.2" opacity="0.5"/>
+  <!-- Continuum Coordination Mesh Arcs -->
+  <path d="M17 31 C23 23, 41 23, 47 31 C41 39, 23 39, 17 31 Z" 
+        stroke="url(#cg-white-grad)" stroke-width="3" stroke-linejoin="round" fill="none"/>
+  <path d="M32 14 L32 50" 
+        stroke="url(#cg-white-grad)" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Central Luminous Nexus Node (Citizen Core) -->
+  <circle cx="32" cy="31" r="4.5" fill="#ffffff"/>
+  <circle cx="32" cy="31" r="2.2" fill="#0d9488"/>
+
+  <!-- Coordinate Network Nodes -->
+  <circle cx="17" cy="31" r="3" fill="#ffffff"/>
+  <circle cx="47" cy="31" r="3" fill="#ffffff"/>
+  <circle cx="32" cy="14" r="3" fill="#ffffff"/>
+  <circle cx="32" cy="50" r="3" fill="#ffffff"/>
 </svg>`;
 
 // Write SVG icons
 fs.writeFileSync(path.resolve('frontend/public/icon.svg'), svgContent, 'utf8');
 fs.writeFileSync(path.resolve('frontend/src/app/icon.svg'), svgContent, 'utf8');
-console.log('Created frontend/public/icon.svg and frontend/src/app/icon.svg');
+console.log('✓ Created frontend/public/icon.svg & frontend/src/app/icon.svg (The Care Matrix Shield)');
 
 // 2. Generate PNG Icons
-const png16 = createPng(16, 16, drawCareGridIcon);
-const png32 = createPng(32, 32, drawCareGridIcon);
-const png48 = createPng(48, 48, drawCareGridIcon);
-const png192 = createPng(192, 192, drawCareGridIcon);
-const png512 = createPng(512, 512, drawCareGridIcon);
+const png16 = createPng(16, 16, drawCareGridSymbol);
+const png32 = createPng(32, 32, drawCareGridSymbol);
+const png48 = createPng(48, 48, drawCareGridSymbol);
+const png192 = createPng(192, 192, drawCareGridSymbol);
+const png512 = createPng(512, 512, drawCareGridSymbol);
 
 fs.writeFileSync(path.resolve('frontend/public/icons/icon-192x192.png'), png192);
 fs.writeFileSync(path.resolve('frontend/public/icons/icon-512x512.png'), png512);
-console.log('Updated frontend/public/icons/icon-192x192.png and icon-512x512.png');
+console.log('✓ Updated frontend/public/icons/icon-192x192.png & icon-512x512.png');
 
 // 3. Generate Valid Binary favicon.ico
 const icoBuffer = createIco([
@@ -208,5 +255,5 @@ const icoBuffer = createIco([
 
 fs.writeFileSync(path.resolve('frontend/public/favicon.ico'), icoBuffer);
 fs.writeFileSync(path.resolve('frontend/src/app/favicon.ico'), icoBuffer);
-console.log('Created valid binary favicon.ico in frontend/public/ and frontend/src/app/');
-console.log('ICO file size:', icoBuffer.length, 'bytes');
+console.log('✓ Created valid binary favicon.ico with The Care Matrix Shield');
+console.log('  ICO file size:', icoBuffer.length, 'bytes');
