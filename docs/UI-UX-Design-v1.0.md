@@ -31,6 +31,12 @@ The CAREGRID design language is grounded in the operational realities of rural I
 5. **Human-in-the-Loop Clinical Authority:**
    - Every assistive suggestion features a clear, non-diagnostic disclaimer and requires human confirmation before a referral or appointment is submitted.
 
+> [!NOTE]
+> **Demo / Sample Data Disclaimers:**
+> 1. **District Names as Demo Placeholders:** All district references (e.g., Gadchiroli, Nashik, Pune) appearing in this specification, UI mockups, and prototypes are strictly illustrative sample/demo placeholders for hackathon evaluation and do NOT denote confirmed or approved deployment locations.
+> 2. **Mock Health Identifiers:** All identifiers in format `CARE-MH-...` (e.g. `CARE-MH-2026-A8F2`) shown across screens are purely synthetic demo/mock placeholders and do NOT represent real, issued, or official government health IDs.
+
+
 ---
 
 ## 2. Information Architecture (IA)
@@ -47,8 +53,8 @@ The CAREGRID design language is grounded in the operational realities of rural I
  ▼               ▼             ▼               ▼             ▼               ▼
 Facility      Health ID      ASHA / ANM     Doctor / PHC   District       Referral
 Discovery     & Timeline     Field Mode     OPD & Tele     Overview       Funnel
-& Services    (CARE-MH-...)  (Intake/Task)  (Queue/Notes)  & Facility     & Adherence
-                                                           Readiness      Metrics
+& Services    (CARE-MH-...   (Intake/Task)  (Queue/Notes)  & Facility     & Adherence
+              Demo Mock)                                   Readiness      Metrics
 ```
 
 ---
@@ -195,10 +201,10 @@ In rural Maharashtra, many patients and some newly recruited community workers h
 
 1. **Citizen Home & Search:** Clean hero banner with quick links: "Find Nearest Public Hospital", "Check Doctor Availability", "My Health Timeline", "Healthcare Schemes".
 2. **Public Facility & Service Discovery:**
-   - Filter by District (`Gadchiroli`, `Nashik`, `Pune`), Taluka, and Facility Type (PHC, RH, SDH, DH).
+   - Filter by Sample Demo Districts (`Gadchiroli`, `Nashik`, `Pune` — illustrative placeholders only, not confirmed rollout sites), Taluka, and Facility Type (PHC, RH, SDH, DH).
    - Facility cards displaying operating hours, distance, available services (ANC, Lab, Teleconsultation), and verified contact phone.
 3. **My Health Record Timeline:**
-   - Patient enters their neutral identifier (`CARE-MH-2026-A8F2`) and receives a chronological care timeline.
+   - Patient enters their neutral identifier (e.g. `CARE-MH-2026-A8F2` — demo/mock placeholder only, not a real health ID) and receives a chronological care timeline.
    - Clean badges demarcating ASHA home visits, PHC checkups, laboratory results, and referral completions.
 4. **Scheme Eligibility & Guidance:**
    - Interactive checklist for MJPJAY, PM-JAY, JSSK.
@@ -270,7 +276,7 @@ In rural Maharashtra, many patients and some newly recruited community workers h
 
 ## 18. Government & Facility Visibility Dashboard
 
-1. **District & Taluka Filter Bar:** Instant switching between Gadchiroli, Nashik, Pune, or State Aggregate view.
+1. **District & Taluka Filter Bar:** Instant switching between sample demo districts (`Gadchiroli`, `Nashik`, `Pune` — illustrative placeholders only, not confirmed rollout sites) or State Aggregate view.
 2. **Referral Continuum Funnel Card:** Visual funnel showing drop-off rates across Initiated $\rightarrow$ Acknowledged $\rightarrow$ Evaluated $\rightarrow$ Completed.
 3. **Triage Urgency Ratio Chart:** Pie / bar representation of Emergency Red vs Urgent Amber vs Routine Green.
 4. **Essential Medicine Stock Readiness Grid:** Matrix of facilities showing green/amber/red stock status for IFA, ORS, and Paracetamol.
@@ -351,30 +357,31 @@ The application dynamically adapts available routes and navigation items based o
 
 ## 24. Prototype & Demo Flow (End-to-End Walkthrough)
 
-The recommended demonstration walkthrough for hackathon evaluators and public health stakeholders:
+The recommended demonstration walkthrough for hackathon evaluators and public health stakeholders (*Note: All district names, village names, and patient IDs below are illustrative demo/mock placeholders*):
 1. **Step 1: Frontline Field Intake (ASHA Persona):**
-   - Open ASHA workspace $\rightarrow$ register high-risk pregnant patient in Mendha Lekha village $\rightarrow$ record Hb 7.8 g/dL.
+   - Open ASHA workspace $\rightarrow$ register high-risk pregnant patient in Mendha Lekha village (sample demo catchment) $\rightarrow$ record Hb 7.8 g/dL.
 2. **Step 2: Assistive Triage Execution:**
    - System flags `URGENT AMBER` $\rightarrow$ displays rule explainability $\rightarrow$ worker confirms non-diagnostic disclaimer.
 3. **Step 3: Closed-Loop Referral Creation:**
-   - ASHA creates referral to Gadchiroli District Hospital for Obstetric review.
+   - ASHA creates referral to sample District Hospital (e.g., Gadchiroli placeholder) for Obstetric review.
 4. **Step 4: Hospital Specialist Acknowledgement & Evaluation:**
    - Switch to Doctor Persona $\rightarrow$ acknowledge incoming referral $\rightarrow$ record evaluation & discharge summary.
 5. **Step 5: Automated Closed-Loop Follow-Up:**
    - Switch back to ASHA Persona $\rightarrow$ view newly created "Post-Referral Check" task in "Due Today" tab $\rightarrow$ mark home visit completed.
 6. **Step 6: Government Visibility Dashboard:**
-   - Switch to Admin Persona $\rightarrow$ observe real-time referral completion rate and district follow-up adherence increment on Gadchiroli district telemetry.
+   - Switch to Admin Persona $\rightarrow$ observe real-time referral completion rate and district follow-up adherence increment on sample district telemetry (e.g. Gadchiroli demo view).
 
 ---
 
 ## 25. Google Stitch Screen Recreation Plan
 
-For high-fidelity interactive UI prototyping in Google Stitch, the following **5 pivotal screens** must be recreated:
+For high-fidelity interactive UI prototyping in Google Stitch, the following **5 pivotal screens** must be recreated (*all IDs and districts shown in mockups are illustrative demo/sample placeholders*):
 
 | # | Screen Name | Route / Context | Primary User Value & Visual Focus |
 |---|---|---|---|
 | 1 | **ASHA Frontline Intake & Triage Runner** | `/asha/intake` | Touch-optimized vitals entry, immediate out-of-range feedback, `urgent_amber` badge, and non-diagnostic safety disclaimer card. |
 | 2 | **Doctor OPD Priority Queue & Tele-Pod** | `/doctor/queue` | Real-time emergency priority-sorted queue (`emergency_red` at top), WebRTC video frame, and specialist counter-notes canvas. |
-| 3 | **Closed-Loop Referral Continuum Tracker** | `/referrals/tracking` | Multi-stage lifecycle visualizer (Initiated $\rightarrow$ Acknowledged $\rightarrow$ Evaluated $\rightarrow$ Completed), tracking code display (`REF-MH-GAD-7821`). |
-| 4 | **Longitudinal Care Timeline (Citizen/Provider)**| `/patients/{id}/timeline`| Chronological visual care events (vitals, encounters, referrals, lab tests, follow-ups) under neutral ID `CARE-MH-2026-A8F2`. |
-| 5 | **District Public Health Governance Dashboard** | `/admin/dashboard` | Maharashtra district filter (`Gadchiroli`, `Nashik`, `Pune`), referral funnel metrics, triage distribution, and service readiness grid. |
+| 3 | **Closed-Loop Referral Continuum Tracker** | `/referrals/tracking` | Multi-stage lifecycle visualizer (Initiated $\rightarrow$ Acknowledged $\rightarrow$ Evaluated $\rightarrow$ Completed), tracking code display (`REF-MH-GAD-7821` demo placeholder). |
+| 4 | **Longitudinal Care Timeline (Citizen/Provider)**| `/patients/{id}/timeline`| Chronological visual care events (vitals, encounters, referrals, lab tests, follow-ups) under neutral ID `CARE-MH-2026-A8F2` (demo mock placeholder). |
+| 5 | **District Public Health Governance Dashboard** | `/admin/dashboard` | Maharashtra sample demo district filter (`Gadchiroli`, `Nashik`, `Pune` — illustrative placeholders), referral funnel metrics, triage distribution, and service readiness grid. |
+
