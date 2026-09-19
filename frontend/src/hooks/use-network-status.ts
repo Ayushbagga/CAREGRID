@@ -11,8 +11,25 @@ export function useNetworkStatus() {
     try {
       const count = await SyncManager.getPendingCount();
       setPendingCount(count);
+      return count;
     } catch {
       // IndexedDB might not be available in SSR
+      return 0;
+    }
+  };
+
+  const syncAndRefresh = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.onLine) {
+        const count = await SyncManager.getPendingCount();
+        if (count > 0) {
+          await SyncManager.processQueue();
+        }
+      }
+    } catch {
+      // ignore
+    } finally {
+      await refreshPendingCount();
     }
   };
 
@@ -20,12 +37,11 @@ export function useNetworkStatus() {
     if (typeof window === 'undefined') return;
 
     setIsOnline(navigator.onLine);
-    refreshPendingCount();
+    syncAndRefresh();
 
     const handleOnline = async () => {
       setIsOnline(true);
-      await SyncManager.processQueue();
-      await refreshPendingCount();
+      await syncAndRefresh();
     };
 
     const handleOffline = () => {
@@ -35,7 +51,7 @@ export function useNetworkStatus() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    const interval = setInterval(refreshPendingCount, 10000);
+    const interval = setInterval(syncAndRefresh, 8000);
 
     return () => {
       window.removeEventListener('online', handleOnline);
