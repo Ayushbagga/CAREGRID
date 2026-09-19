@@ -11,8 +11,8 @@
 | **Problem Statement** | **SIH26133**: Accessibility & Quality of Public Healthcare in Rural/Underserved Areas |
 | **Nodal Jurisdiction** | **Government of Maharashtra** — Public Health Department (सार्वजनिक आरोग्य विभाग) |
 | **Team Designation** | **The Glitch Gang** (Team ID: 129855) |
-| **Project Status** | **MVP Feature-Complete & Fully Verified** (Sprints 1–5 Implemented & Tested) |
-| **Target Implementation** | Primary Health Centres (PHCs), Community Health Centres (CHCs), Sub-Centres, District Hospitals, and ASHA/ANM Village Field Workers in Maharashtra |
+| **Project Status** | **MVP Feature-Complete & Fully Verified** (Sprints 1–5 Implemented & Verified in Prototype QA) |
+| **Target Design Context** | Primary Health Centres (PHCs), Community Health Centres (CHCs), Sub-Centres, District Hospitals, and ASHA/ANM Village Field Workers in Maharashtra (Proof-of-Concept Scope) |
 
 ---
 
@@ -67,7 +67,7 @@ CAREGRID operationalizes the public healthcare journey across 9 distinct, interc
 Public healthcare delivery across Maharashtra's 36 districts encounters stark geographic and operational divides. In tribal and remote belts such as Gadchiroli (Sironcha, Bhamragad, Aheri), Nandurbar (Dhadgaon, Akkalkuwa), Melghat (Dharni, Chikhaldara), and rural tracts of Nashik and Palghar, rural citizens face acute barriers to timely care:
 
 1. **Severe Cellular Blackouts ("The Offline Reality")**: Field health workers operate in zero-reception forest and hilly hamlets where conventional cloud-only health apps fail completely.
-2. **Disconnected, Paper-Based Referral "Dropouts"**: When a PHC Medical Officer refers a patient with pre-eclampsia or severe diabetic ulcers to a District Hospital, the patient is handed a paper slip. Up to 60% of rural patients drop out of the referral chain due to travel costs, lack of receiving facility acknowledgement, or confusion upon arrival.
+2. **Disconnected, Paper-Based Referral "Dropouts"**: When a PHC Medical Officer refers a patient with high-risk conditions to a District Hospital, the patient is often handed an unrecorded paper slip. Qualitative field observations in rural public health indicate substantial referral dropouts due to travel costs, absence of receiving facility acknowledgement, and logistical confusion upon arrival.
 3. **Unstructured, Overburdened OPD Queues**: Primary health centres experience chaotic walk-in rushes where critical, deteriorating patients (e.g., acute respiratory distress, severe maternal hypertension) wait in unprioritized queues alongside routine minor ailments.
 4. **Lack of Post-Discharge Follow-up**: Once a patient is discharged from a higher hospital, the local village ASHA worker receives no notification or care summary, leading to missed post-operative checks, neonatal complications, and preventable readmissions.
 5. **Information Asymmetry for Citizens**: Rural families often travel 40–80 km to a hospital only to discover that the specialist is on leave, sonography is unavailable that day, or they do not know how to avail benefits under the Mahatma Jyotirao Phule Jan Arogya Yojana (MJPJAY).
@@ -138,7 +138,7 @@ CAREGRID enforces strict, principle-of-least-privilege Role-Based Access Control
   1. Opens CAREGRID mobile app in offline mode.
   2. Selects pregnant citizen Sunita Gawade (26y).
   3. Records vitals: BP 160/110 mmHg, severe headache, bilateral pedal edema.
-  4. CAREGRID Triage Engine flags "Emergency Red" (Severe Gestational Hypertension).
+  4. CAREGRID Triage Engine flags "Emergency Red" (Clinical Urgency: Blood pressure ≥ 160/110 mmHg with maternal danger signs).
   5. ASHA escorts patient to Chamorshi PHC.
          │
          ▼
@@ -150,7 +150,7 @@ CAREGRID enforces strict, principle-of-least-privilege Role-Based Access Control
          ▼
 [District Hospital Specialist: Gadchiroli DH]
   9. Receiving Obstetrician receives incoming notification and clicks "Acknowledge Referral".
-  10. Patient arrives; Obstetrician evaluates, manages pre-eclampsia, and stabilizes patient.
+  10. Patient arrives; Obstetrician evaluates patient and administers hospital clinical care according to protocol.
   11. Specialist enters clinical evaluation and marks referral "Completed".
          │
          ▼
@@ -168,7 +168,7 @@ CAREGRID enforces strict, principle-of-least-privilege Role-Based Access Control
   3. AI Triage Engine flags "Emergency Red" with danger sign.
   4. Patient is fast-tracked ahead of routine green cases.
   5. Medical Officer initiates rural teleconsultation link with District Hospital Cardiologist.
-  6. Low-bandwidth audio/video canvas launches; specialist reviews vitals timeline and advises stabilization protocol.
+  6. Low-bandwidth audio/video canvas launches; specialist reviews vitals timeline and provides clinical guidance to the attending Medical Officer.
 ```
 
 ### 6.3 Journey C: Citizen Self-Discovery of Facility Services and Scheme Benefits
@@ -270,7 +270,7 @@ All 11 modules are designed to operate locally on the device (client-side) using
   - Community Health Centres (CHCs) / Rural Hospitals (RHs)
   - Sub-District Hospitals (SDHs) & District Hospitals (DHs)
 - **FR-FAC-02**: Service & Specialty Catalog: Search and filter facilities by clinical services: General Medicine, Obstetrics & Gynecology, Pediatrics, Emergency Care, Minor OT, X-Ray, Sonography, Laboratory, and NCD Screening.
-- **FR-FAC-03**: Operating Metadata: Facility profile displaying full address, contact numbers, operating hours, emergency 24/7 status, and ambulance tie-up information.
+- **FR-FAC-03**: Operating Metadata: Facility profile displaying full address, contact numbers, operating hours, emergency 24/7 status, and emergency facility contact numbers.
 
 ---
 
@@ -307,18 +307,18 @@ All 11 modules are designed to operate locally on the device (client-side) using
 ┌────────────────────────────────────────────────────────────────────────┐
 │                     AI TRIAGE MATRIX (NON-DIAGNOSTIC)                  │
 ├─────────────────┬──────────────────────────┬───────────────────────────┤
-│ Urgency Tier    │ Clinical Criteria Trigger│ Action Required           │
+│ Urgency Tier    │ Clinical Criteria Trigger│ Suggested Prioritization  │
 ├─────────────────┼──────────────────────────┼───────────────────────────┤
-│ EMERGENCY RED   │ SBP ≥ 160 or DBP ≥ 110,  │ Immediate stabilization;  │
+│ EMERGENCY RED   │ SBP ≥ 160 or DBP ≥ 110,  │ Immediate clinical review │
 │                 │ SpO2 < 90%, active chest │ Fast-track OPD queue top; │
-│                 │ pain, maternal bleeding  │ Specialist referral alert │
+│                 │ pain, maternal bleeding  │ Consider specialist alert │
 ├─────────────────┼──────────────────────────┼───────────────────────────┤
 │ URGENT AMBER    │ SBP 140–159 or DBP 90–99,│ Priority review within    │
-│                 │ SpO2 90–94%, persistent  │ 60 minutes; secondary care│
-│                 │ fever, diabetic foot     │ workup                    │
+│                 │ SpO2 90–94%, persistent  │ OPD session; secondary    │
+│                 │ fever, diabetic lesion   │ referral as indicated     │
 ├─────────────────┼──────────────────────────┼───────────────────────────┤
 │ ROUTINE GREEN   │ Normal vitals, mild cold/│ Standard OPD sequence;    │
-│                 │ cough, routine follow-up │ Community health check    │
+│                 │ cough, routine check-in  │ Routine primary evaluation│
 └─────────────────┴──────────────────────────┴───────────────────────────┘
 ```
 
@@ -390,7 +390,7 @@ All 11 modules are designed to operate locally on the device (client-side) using
 
 ## 22. Security and Privacy Requirements
 
-- **FR-SEC-01**: Data Privacy Compliance: Architecture adheres to the principles of the Digital Personal Data Protection Act (DPDPA 2023) and DISHA (Digital Information Security in Healthcare Act).
+- **FR-SEC-01**: Privacy & Regulatory Alignment (Architectural Intent): Designed with architectural intent to respect the privacy principles of the Digital Personal Data Protection Act (DPDPA 2023) and DISHA guidelines. *Note: This design alignment represents self-attested technical safeguards and does not constitute formal statutory compliance certification.*
 - **FR-SEC-02**: Aggregated Telemetry Governance: Administrative dashboards are mathematically decoupled from patient PII; data aggregation occurs before transmission to administrative interfaces.
 - **FR-SEC-03**: Minimal PII Exposure: Patient profiles utilize neutral identifiers; phone numbers and demographic addresses are masked on referral sheets outside the direct care circle.
 - **FR-SEC-04**: Client-Side Storage Hygiene: Local IndexedDB data is sandboxed to the application origin; sensitive session tokens are stored in `httpOnly` secure cookies or ephemeral memory.
@@ -400,13 +400,13 @@ All 11 modules are designed to operate locally on the device (client-side) using
 
 ## 23. Interoperability Direction (ABDM Alignment)
 
-- **FR-INT-01**: Neutral Identifier Architecture: CAREGRID uses a clean, compliant internal identifier (`CARE-MH-YYYY-XXXX`) designed to bind seamlessly to an 14-digit ABHA ID once formal gateway APIs are provisioned.
+- **FR-INT-01**: Neutral Identifier Architecture: CAREGRID uses an independent, neutral identifier (`CARE-MH-YYYY-XXXX`). The platform does NOT claim ABDM certification, live ABHA issuance, or active integration with the National Health Authority gateway.
 - **FR-INT-02**: FHIR R4 Ready Data Structures: All internal healthcare models (Patient, Encounter, Observation, ServiceRequest, Appointment) mirror HL7 FHIR Release 4 resource profiles:
   - `Patient` $\rightarrow$ FHIR `Patient` resource
   - `VitalsScreening` $\rightarrow$ FHIR `Observation` bundle
   - `Referral` $\rightarrow$ FHIR `ServiceRequest` resource
   - `Appointment` $\rightarrow$ FHIR `Appointment` resource
-- **FR-INT-03**: ABDM Milestone Roadmap: Technical provisions ready for Sandbox M1 (ABHA creation), M2 (HIP - Health Information Provider), and M3 (HIU - Health Information User) integration.
+- **FR-INT-03**: Conceptual Integration Roadmap (Uncertified / Exploratory): Outlines technical schema provisions for potential future alignment with ABDM Sandbox milestones (M1/M2/M3) should government sandbox credentials and compliance audits be authorized in the future.
 
 ---
 
@@ -423,14 +423,16 @@ All 11 modules are designed to operate locally on the device (client-side) using
 
 ## 25. MVP vs Post-MVP Phasing
 
-| Functional Area | Sprint 1–5 MVP (Implemented & Verified) | Phase 2 (Taluka/District Pilot) | Phase 3 (State-Wide Scale) |
+> **Deployment Status Notice**: Sprints 1–5 constitute the verified working prototype implementation. Any Taluka, District, or State-wide rollout horizons detailed below represent **proposed future phases** and exploratory capabilities subject to official government administrative approval and technical sandbox clearance. They are not guaranteed or legally binding deployment commitments.
+
+| Functional Area | Sprint 1–5 MVP (Verified Working Prototype) | Proposed Phase 2 (Future Taluka/District Exploration — Subject to Approvals) | Proposed Phase 3 (Proposed Long-Term Horizon — Non-Committed) |
 | :--- | :--- | :--- | :--- |
-| **Connectivity** | Offline-First Dexie.js + truthful local queue status | Supabase Cloud Database sync with auto-reconnect | State Data Centre (SDC) PostgreSQL cluster |
+| **Connectivity** | Offline-First Dexie.js + truthful local queue status | Supabase Cloud Database sync with auto-reconnect (when configured) | State Data Centre (SDC) PostgreSQL cluster |
 | **Language Support** | Full English, Hindi, Marathi (100% parity) | Regional dialect glossaries (Gondi, Korku, Bhili) | Voice-based multilingual speech-to-text |
 | **Triage Module** | Rule-based clinical urgency heuristics + Doctor override | Enhanced vital trend scoring & pediatric risk alerts | Federated multi-centre priority calibration |
 | **Referral System** | Closed-loop 4-stage transfer + ASHA counter-tasks | Inter-district transfers across Maharashtra | National referral exchange across state borders |
 | **Teleconsultation** | Web canvas with low-bandwidth video/audio simulation | WebRTC live video/audio rooms with packet throttling | Integrated satellite VSAT teleconsultation links |
-| **Digital Health ID** | Neutral `CARE-MH-*` identifier with QR code | ABDM Sandbox M1 (ABHA ID verification) | National Health Record Exchange (M2/M3 certified) |
+| **Digital Health ID** | Neutral `CARE-MH-*` identifier with QR code | ABDM Sandbox M1 exploratory evaluation | Potential National Health Record Exchange integration |
 | **Notifications** | In-app notification feeds & Citizen reminder modal | Automated SMS alerts via C-DAC Mobile Seva | Interactive WhatsApp bot & IVR automated calls |
 | **Dashboard** | Operational district/state telemetry + district filters | Real-time taluka GIS maps & facility heatmaps | Predictive supply chain & resource allocation |
 
@@ -485,26 +487,34 @@ All 11 modules are designed to operate locally on the device (client-side) using
 - Receiving District Hospitals possess designated Medical Officers or data entry operators to acknowledge incoming transfers.
 
 ### 27.3 External Dependencies
-- **State Cloud Infrastructure**: Future cloud hosting on Maharashtra State Data Centre (SDC) or compliant GovCloud.
-- **Telecommunications**: Periodic cellular connectivity (2G/3G/4G) at village weekly markets (haats) or PHCs to trigger synchronization.
-- **Government Authorization**: Official administrative circular from the Public Health Department sanctioning digital referral handovers.
+- **State Cloud Infrastructure**: Future cloud hosting on Maharashtra State Data Centre (SDC) or compliant GovCloud (when provisioned).
+- **Telecommunications**: Periodic cellular connectivity (2G/3G/4G) at village weekly markets (haats) or PHCs to trigger asynchronous synchronization.
+- **Administrative Clearance**: Formal administrative pilot authorization from public health authorities prior to any field testing.
 
 ---
 
-## 28. Success Metrics (Key Performance Indicators)
+## 28. Evaluation Framework & Performance Indicators
 
-### 28.1 Clinical & Care Access KPIs
-- **Referral Completion Rate**: Increase closed-loop referral follow-through from baseline ~40% to $\ge 85\%$ across pilot talukas within 6 months.
-- **Maternal High-Risk Detection to Care Latency**: Decrease time elapsed between ASHA village detection of high-risk pregnancy and specialist evaluation from 14 days to $\le 48$ hours.
-- **Emergency Triage Response Time**: Ensure 100% of `emergency_red` patients at PHC OPDs receive medical officer attention within 5 minutes of token issuance.
-- **Post-Discharge Follow-Up Adherence**: Achieve $\ge 90\%$ timely home visit completion by village ASHAs within 72 hours of hospital discharge.
+To ensure analytical rigor and prevent arbitrary commitments, evaluation metrics are categorized into three distinct tiers:
 
-### 28.2 Operational & Technical KPIs
-- **Zero Field Data Loss**: 100% local persistence reliability with 0 records lost during network outages or device reboots.
-- **Sync Completion Rate**: $\ge 99.5\%$ successful transmission of offline queues upon reconnection.
-- **Trilingual Parity Index**: 100% parity maintained across all releases (0 missing translation keys).
-- **User Adoption Rate**: $\ge 90\%$ daily active utilization among pilot ASHA field workers and PHC Medical Officers.
+### 28.1 Externally Validated Facts & Baseline Context
+- **Infrastructure Constraints**: Remote and tribal blocks in Maharashtra experience recognized cellular dead zones, necessitating offline-first data capture.
+- **Referral Friction**: In standard rural public health workflows, paper-based referral handovers frequently lack receiving facility acknowledgement, resulting in documented patient dropouts.
+- **Care Continuity Need**: Post-discharge maternal and chronic care in rural settings depends directly on community health worker (ASHA) follow-up home visits.
+
+### 28.2 Proposed Internal Targets (Non-Binding Exploratory Goals for Pilot Evaluation)
+*Note: The following metrics represent aspirational targets for potential pilot studies. They do not constitute guaranteed outcomes or legally binding performance commitments:*
+- **Closed-Loop Referral Follow-Through**: Aim for $\ge 80\%$ of initiated referrals in a pilot block to achieve recorded facility acknowledgement and status updates.
+- **Maternal High-Risk Coordination**: Aim for specialist evaluation of identified high-risk pregnancies within 48–72 hours of village screening.
+- **Post-Discharge Follow-up Adherence**: Aim for $\ge 85\%$ completion of assigned post-discharge home visits by village ASHAs within 72 hours.
+- **Triage Queue Responsiveness**: Aim for prioritized clinical review of `emergency_red` flagged patients at PHC OPDs upon arrival.
+
+### 28.3 Measurable Technical Acceptance Criteria (Objectively Verified in Code)
+- **Local Persistence Reliability**: 100% verified retention of locally entered records (patients, encounters, tokens, referrals) in IndexedDB across simulated offline disconnections, tab closures, and reloads.
+- **Trilingual Parity Index**: 100% dictionary key parity (266 / 266 keys, 0 missing strings) across English, Hindi, and Marathi, validated in automated test suites.
+- **Truthful Status Reporting**: 100% adherence to honest offline and sync messaging (displaying local queue storage when cloud credentials are unconfigured).
+- **Automated Verification**: 100% pass rate across automated regression suites (`test-sprint2.mjs` through `test-sprint5.mjs`) and Puppeteer browser E2E test suites with 0 console errors.
 
 ---
 
-*Document compiled in strict accordance with SIH26133 by **The Glitch Gang** (Team ID: 129855) for the Government of Maharashtra Public Health Department.*
+*Document reviewed and verified in strict accordance with SIH26133 by **The Glitch Gang** (Team ID: 129855) for the Government of Maharashtra Public Health Department.*
