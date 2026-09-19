@@ -9,13 +9,20 @@ export const metadata: Metadata = {
     'Rural public healthcare coordination platform for ASHAs, PHCs, and citizens in Maharashtra. SIH26133 - Government of Maharashtra.',
   manifest: '/manifest.json',
   icons: {
-    icon: '/icons/icon-192x192.png',
-    apple: '/icons/icon-192x192.png',
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0284c7',
+  themeColor: '#0d9488',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
