@@ -210,7 +210,7 @@ export default function HomePage() {
             </div>
             <div className="flex items-center space-x-2">
               <span className="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded">
-                ABHA & Health Timeline Active
+                Health ID & Timeline Active
               </span>
             </div>
           </Link>

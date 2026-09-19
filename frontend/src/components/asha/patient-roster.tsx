@@ -153,7 +153,7 @@ export const PatientRoster: React.FC<PatientRosterProps> = ({
                     </button>
                   )}
                   {patient.abha_id && (
-                    <span className="text-[10px] bg-teal-50 text-teal-800 px-1.5 py-0.5 rounded">ABHA Linked</span>
+                    <span className="text-[10px] bg-teal-50 text-teal-800 px-1.5 py-0.5 rounded">Health ID Linked</span>
                   )}
                 </div>
               </div>

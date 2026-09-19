@@ -58,7 +58,7 @@ export default function CitizenPortalPage() {
             <span>{t.governmentTag}</span>
           </div>
           <div className="flex items-center space-x-3 text-slate-400">
-            <span>आयुष्मान भारत डिजिटल मिशन (ABDM) सक्षम</span>
+            <span>सार्वजनिक आरोग्य सेवा सलगता (Care Continuity)</span>
           </div>
         </div>
       </div>
@@ -128,21 +128,21 @@ export default function CitizenPortalPage() {
           </div>
         ) : (
           <>
-            {/* ABHA Digital Health Card */}
+            {/* Digital Health ID Card */}
             <div className="bg-gradient-to-r from-teal-800 via-teal-900 to-slate-900 rounded-2xl text-white p-5 shadow-lg relative overflow-hidden">
               <div className="flex flex-wrap justify-between items-start gap-4 relative z-10">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-xs text-teal-300 font-bold uppercase tracking-wider">
                     <CreditCard className="w-4 h-4" />
-                    <span>राष्ट्रीय आरोग्य प्राधिकरण (NHA) • आयुष्मान भारत डिजिटल मिशन</span>
+                    <span>महाराष्ट्र शासन • सार्वजनिक आरोग्य विभाग (Public Health Dept)</span>
                   </div>
                   <h2 className="text-xl font-black text-white tracking-wide">
                     {currentPatient.full_name}
                   </h2>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-1">
                     <div>
-                      <span className="text-teal-300/80 block text-[10px]">आभा क्रमांक (ABHA ID)</span>
-                      <span className="font-mono font-bold">{currentPatient.abha_id || '91-4521-9874-1234'}</span>
+                      <span className="text-teal-300/80 block text-[10px]">आरोग्य ओळख क्रमांक (Health ID)</span>
+                      <span className="font-mono font-bold">{currentPatient.abha_id || 'HID-MH-7821-4091'}</span>
                     </div>
                     <div>
                       <span className="text-teal-300/80 block text-[10px]">वय / लिंग (Age / Gender)</span>

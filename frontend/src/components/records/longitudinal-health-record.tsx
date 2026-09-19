@@ -58,7 +58,7 @@ export function LongitudinalHealthRecord({ patientId, onClose }: LongitudinalHea
             title: t.registrationEvent,
             timestamp: pat.created_at,
             facilityOrWorker: `ASHA Worker (${pat.assigned_asha_id || 'asha-001'})`,
-            summary: `Initial registration at ${pat.village}, ${pat.taluka}. Age: ${pat.estimated_age}y, Gender: ${pat.gender}. ${pat.abha_id ? `ABHA: ${pat.abha_id}` : ''}`,
+            summary: `Initial registration at ${pat.village}, ${pat.taluka}. Age: ${pat.estimated_age}y, Gender: ${pat.gender}. ${pat.abha_id ? `Health ID: ${pat.abha_id}` : ''}`,
             details: {
               chronic_conditions: pat.chronic_conditions || [],
               is_pregnant: pat.is_pregnant,
@@ -178,7 +178,7 @@ export function LongitudinalHealthRecord({ patientId, onClose }: LongitudinalHea
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
             <span className="text-xs bg-teal-500/20 text-teal-300 font-mono px-2 py-0.5 rounded font-bold">
-              {patient?.abha_id || 'ABHA PENDING'}
+              {patient?.abha_id || 'HEALTH ID PENDING'}
             </span>
             {patient?.high_risk_pregnancy && (
               <span className="text-[10px] bg-red-500/20 text-red-300 font-bold px-2 py-0.5 rounded-full border border-red-500/30">

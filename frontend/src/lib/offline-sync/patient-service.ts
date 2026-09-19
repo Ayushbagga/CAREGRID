@@ -20,7 +20,7 @@ export interface LocalScreeningEncounter {
 const INITIAL_DEMO_PATIENTS: Patient[] = [
   {
     id: 'p-001',
-    abha_id: '91-4456-7890-1234',
+    abha_id: 'HID-MH-4456-7890',
     full_name: 'अनिता ज्ञानेश्वर मेश्राम (Anita Meshram)',
     estimated_age: 26,
     gender: 'female',
@@ -37,7 +37,7 @@ const INITIAL_DEMO_PATIENTS: Patient[] = [
   },
   {
     id: 'p-002',
-    abha_id: '91-8890-1234-5678',
+    abha_id: 'HID-MH-8890-1234',
     full_name: 'बापूराव लिंगू आत्राम (Bapurao Atram)',
     estimated_age: 58,
     gender: 'male',
