@@ -18,7 +18,7 @@ export async function GET() {
 
     if (isConfigured) {
       try {
-        const supabase = createServerClient();
+        const supabase = await createServerClient();
         const { data, error } = await supabase.auth.getSession();
         authReachable = !error;
         authStatus = error ? error.message : 'connected_anonymous';
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     // Initialize official Supabase server client
     let user = null;
     try {
-      const supabase = createServerClient();
+      const supabase = await createServerClient();
       const { data } = await supabase.auth.getUser();
       user = data?.user || null;
     } catch {
