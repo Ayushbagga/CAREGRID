@@ -288,7 +288,33 @@ export const translations = {
     homeAdminRoleBadge: 'आरोग्य सेवा विश्लेषण सक्रिय',
     homeDisclaimerHeading: '⚠️ वैधानिक सूचना (Clinical Disclaimer):',
     homeDisclaimerBody: 'CAREGRID Clinical Triage Assist ही ग्रामीण महाराष्ट्रात क्लिनिकल तातडी ठरवण्यासाठी आरोग्य कर्मचाऱ्यांसाठी एक साहाय्यकारी प्रणाली आहे. ती कोणताही वैद्यकीय आजार निदान करत नाही किंवा अधिकृत वैद्यकीय अधिकाऱ्याच्या तपासणीची जागा घेत नाही.',
-    homeFooterTeamMeta: 'Smart India Hackathon 2026 • SIH26133 • महाराष्ट्र शासन • संघ: The Glitch Gang (129855)'
+    homeFooterTeamMeta: 'Smart India Hackathon 2026 • SIH26133 • महाराष्ट्र शासन • संघ: The Glitch Gang (129855)',
+
+    // Authentication & Session
+    loginTitle: 'केअरग्रिड लॉगिन',
+    loginSubtitle: 'आरोग्य कर्मचारी व नागरिक प्रवेशद्वार',
+    loginEmailLabel: 'ईमेल पत्ता',
+    loginEmailPlaceholder: 'नाव@उदा.gov.in किंवा user@example.com',
+    loginPasswordLabel: 'पासवर्ड',
+    loginPasswordPlaceholder: 'आपला पासवर्ड प्रविष्ट करा',
+    loginOtpTab: 'ईमेल ओटीपी (One-Time Code)',
+    loginPasswordTab: 'पासवर्ड द्वारे',
+    sendOtpBtn: 'ओटीपी पाठवा',
+    verifyOtpBtn: 'ओटीपी सत्यापित करा व लॉगिन करा',
+    enterOtpLabel: '६-अंकी ओटीपी कोड प्रविष्ट करा',
+    enterOtpPlaceholder: 'उदा. 123456',
+    resendOtpBtn: 'ओटीपी पुन्हा पाठवा',
+    changeEmailBtn: 'ईमेल बदला',
+    otpSentNotice: 'आपल्या ईमेलवर ६-अंकी पडताळणी कोड पाठवला आहे.',
+    loginSuccessNotice: 'यशस्वीरित्या लॉगिन झाले! कृपया प्रतीक्षा करा...',
+    loginErrorInvalidOtp: 'अवैध किंवा कालबाह्य ओटीपी कोड. कृपया पुन्हा प्रयत्न करा.',
+    loginErrorInvalidCredentials: 'ईमेल किंवा पासवर्ड चुकीचा आहे.',
+    loginLoading: 'प्रक्रिया सुरू आहे...',
+    logoutBtn: 'लॉगआउट',
+    loginBtn: 'लॉगिन करा',
+    loggedInAs: 'सक्रिय वापरकर्ता:',
+    backToHome: '← मुख्य पृष्ठावर जा',
+    sessionActive: 'सत्र सक्रिय'
   },
 
   hi: {
@@ -578,7 +604,33 @@ export const translations = {
     homeAdminRoleBadge: 'आरोग्य सेवा विश्लेषण सक्रिय',
     homeDisclaimerHeading: '⚠️ वैधानिक सूचना (Clinical Disclaimer):',
     homeDisclaimerBody: 'CAREGRID Clinical Triage Assist ही ग्रामीण महाराष्ट्रात क्लिनिकल तातडी ठरवण्यासाठी आरोग्य कर्मचाऱ्यांसाठी एक साहाय्यकारी प्रणाली आहे. ती कोणताही वैद्यकीय आजार निदान करत नाही किंवा अधिकृत वैद्यकीय अधिकाऱ्याच्या तपासणीची जागा घेत नाही.',
-    homeFooterTeamMeta: 'Smart India Hackathon 2026 • SIH26133 • महाराष्ट्र शासन • संघ: The Glitch Gang (129855)'
+    homeFooterTeamMeta: 'Smart India Hackathon 2026 • SIH26133 • महाराष्ट्र शासन • संघ: The Glitch Gang (129855)',
+
+    // Authentication & Session
+    loginTitle: 'केयरग्रिड लॉगिन',
+    loginSubtitle: 'स्वास्थ्य कार्यकर्ता एवं नागरिक प्रवेश द्वार',
+    loginEmailLabel: 'ईमेल पता',
+    loginEmailPlaceholder: 'name@example.gov.in या user@example.com',
+    loginPasswordLabel: 'पासवर्ड',
+    loginPasswordPlaceholder: 'अपना पासवर्ड दर्ज करें',
+    loginOtpTab: 'ईमेल ओटीपी (One-Time Code)',
+    loginPasswordTab: 'पासवर्ड द्वारा',
+    sendOtpBtn: 'ओटीपी भेजें',
+    verifyOtpBtn: 'ओटीपी सत्यापित करें एवं लॉगिन करें',
+    enterOtpLabel: '६-अंकीय ओटीपी कोड दर्ज करें',
+    enterOtpPlaceholder: 'उदा. 123456',
+    resendOtpBtn: 'ओटीपी पुनः भेजें',
+    changeEmailBtn: 'ईमेल बदलें',
+    otpSentNotice: 'आपके ईमेल पर ६-अंकीय सत्यापन कोड भेजा गया है।',
+    loginSuccessNotice: 'सफलतापूर्वक लॉगिन हो गया! कृपया प्रतीक्षा करें...',
+    loginErrorInvalidOtp: 'अमान्य या समाप्त ओटीपी कोड। कृपया पुनः प्रयास करें।',
+    loginErrorInvalidCredentials: 'ईमेल या पासवर्ड गलत है।',
+    loginLoading: 'प्रक्रिया जारी है...',
+    logoutBtn: 'लॉगआउट',
+    loginBtn: 'लॉगिन करें',
+    loggedInAs: 'सक्रिय उपयोगकर्ता:',
+    backToHome: '← मुख्य पृष्ठ पर जाएं',
+    sessionActive: 'सत्र सक्रिय'
   },
 
   en: {
@@ -868,6 +920,32 @@ export const translations = {
     homeAdminRoleBadge: 'Care Continuum Analytics Active',
     homeDisclaimerHeading: '⚠️ Clinical Disclaimer:',
     homeDisclaimerBody: 'CAREGRID Clinical Triage Assist is an assistive decision-support algorithm designed to help certified healthcare workers prioritize clinical urgency in rural Maharashtra. It does NOT diagnose medical conditions or replace clinical examination by a licensed medical officer.',
-    homeFooterTeamMeta: 'Smart India Hackathon 2026 • SIH26133 • Government of Maharashtra • Team The Glitch Gang (129855)'
+    homeFooterTeamMeta: 'Smart India Hackathon 2026 • SIH26133 • Government of Maharashtra • Team The Glitch Gang (129855)',
+
+    // Authentication & Session
+    loginTitle: 'CAREGRID Secure Login',
+    loginSubtitle: 'Healthcare Staff & Citizen Access Portal',
+    loginEmailLabel: 'Email Address',
+    loginEmailPlaceholder: 'name@example.gov.in or user@example.com',
+    loginPasswordLabel: 'Password',
+    loginPasswordPlaceholder: 'Enter your password',
+    loginOtpTab: 'Email OTP (One-Time Passcode)',
+    loginPasswordTab: 'Password',
+    sendOtpBtn: 'Send Login Code',
+    verifyOtpBtn: 'Verify Code & Sign In',
+    enterOtpLabel: 'Enter 6-Digit Code',
+    enterOtpPlaceholder: 'e.g. 123456',
+    resendOtpBtn: 'Resend Code',
+    changeEmailBtn: 'Change Email',
+    otpSentNotice: 'A 6-digit one-time code has been sent to your email.',
+    loginSuccessNotice: 'Authenticated successfully! Redirecting...',
+    loginErrorInvalidOtp: 'Invalid or expired code. Please verify and try again.',
+    loginErrorInvalidCredentials: 'Invalid email or password.',
+    loginLoading: 'Authenticating...',
+    logoutBtn: 'Logout',
+    loginBtn: 'Login',
+    loggedInAs: 'Signed in as:',
+    backToHome: '← Back to Home',
+    sessionActive: 'Session Active'
   }
 };

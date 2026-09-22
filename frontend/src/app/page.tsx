@@ -10,14 +10,18 @@ import {
   Building2, 
   ShieldCheck, 
   WifiOff, 
-  CalendarClock
+  CalendarClock,
+  LogIn,
+  LogOut
 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/context';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { CareGridSymbol } from '@/components/shared/caregrid-logo';
+import { useAuth } from '@/lib/auth';
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -48,8 +52,34 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <LanguageSwitcher />
+            {authLoading ? (
+              <div className="w-14 h-8 bg-slate-100 rounded-lg animate-pulse" />
+            ) : isAuthenticated && user ? (
+              <div className="flex items-center space-x-2">
+                <span className="hidden md:inline-block text-xs font-medium text-slate-700 bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200 truncate max-w-[150px]">
+                  {user.email}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="text-xs font-semibold text-slate-700 hover:text-red-700 bg-slate-100 hover:bg-red-50 border border-slate-200 hover:border-red-200 px-2.5 py-1.5 rounded-lg transition-colors flex items-center space-x-1"
+                  title={t.logoutBtn}
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{t.logoutBtn}</span>
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>{t.loginBtn}</span>
+              </Link>
+            )}
           </div>
         </div>
       </header>

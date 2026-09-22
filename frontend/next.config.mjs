@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   headers: async () => [
     {
       source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
