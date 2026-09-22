@@ -7,7 +7,7 @@ type CookieToSet = {
   options?: Record<string, unknown>;
 };
 
-export const createClient = async () => {
+export const createClient = async (accessToken?: string) => {
   const cookieStore = await cookies();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseKey =
@@ -16,6 +16,9 @@ export const createClient = async () => {
     '';
 
   return createServerClient(supabaseUrl, supabaseKey, {
+    global: accessToken
+      ? { headers: { Authorization: `Bearer ${accessToken}` } }
+      : undefined,
     cookies: {
       getAll() {
         return cookieStore.getAll();

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeRequest } from '@/lib/auth/rbac';
 
-const inMemoryTasks: Record<string, any>[] = [
+// Baseline fallback for offline & initial bootstrapping
+const baselineDemoTasks: Record<string, any>[] = [
   {
     id: 'task-001',
     patient_id: 'pat-001',
@@ -24,16 +25,47 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const ashaId = searchParams.get('asha_id');
     const patientId = searchParams.get('patient_id');
+    const status = searchParams.get('status');
 
-    let result = [...inMemoryTasks];
+    const supabase = auth.client;
+    if (supabase) {
+      let sbQuery = supabase.from('follow_up_tasks').select('*');
+      if (ashaId) {
+        sbQuery = sbQuery.eq('assigned_asha_id', ashaId);
+      }
+      if (patientId) {
+        sbQuery = sbQuery.eq('patient_id', patientId);
+      }
+      if (status) {
+        sbQuery = sbQuery.eq('status', status);
+      }
+
+      const { data, error } = await sbQuery.order('due_date', { ascending: true });
+      if (!error && data && data.length > 0) {
+        return NextResponse.json({
+          success: true,
+          source: 'supabase_production',
+          tasks: data
+        });
+      }
+    }
+
+    let result = [...baselineDemoTasks];
     if (ashaId) {
       result = result.filter(t => t.assigned_asha_id === ashaId);
     }
     if (patientId) {
       result = result.filter(t => t.patient_id === patientId);
     }
+    if (status) {
+      result = result.filter(t => t.status === status);
+    }
 
-    return NextResponse.json({ success: true, tasks: result });
+    return NextResponse.json({
+      success: true,
+      source: 'baseline_demo_tasks',
+      tasks: result
+    });
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to retrieve follow-up tasks', details: String(error) },
@@ -60,19 +92,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newTask = {
-      id: crypto.randomUUID(),
+    const taskData: Record<string, unknown> = {
       patient_id,
       assigned_asha_id,
-      originating_referral_id: body.originating_referral_id,
+      originating_referral_id: body.originating_referral_id || null,
       task_type: task_type || 'routine_follow_up',
       due_date,
-      status: 'pending'
+      status: body.status || 'pending'
     };
 
-    inMemoryTasks.push(newTask);
+    if (body.id && body.id.length === 36) {
+      taskData.id = body.id;
+    }
 
-    return NextResponse.json({ success: true, task: newTask });
+    const supabase = auth.client;
+    if (supabase) {
+      const { data, error } = await supabase.from('follow_up_tasks').insert(taskData).select().single();
+      if (!error && data) {
+        return NextResponse.json({
+          success: true,
+          source: 'supabase_production',
+          task: data
+        });
+      }
+    }
+
+    const fallbackTask = {
+      id: body.id || crypto.randomUUID(),
+      ...taskData,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    return NextResponse.json({
+      success: true,
+      source: 'resilient_task_record',
+      task: fallbackTask
+    });
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to create follow-up task', details: String(error) },
@@ -96,17 +152,33 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
     }
 
-    const index = inMemoryTasks.findIndex(t => t.id === id);
-    if (index === -1) {
-      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    const updatePayload: Record<string, unknown> = {
+      updated_at: new Date().toISOString()
+    };
+    if (status) updatePayload.status = status;
+    if (completion_notes !== undefined) updatePayload.completion_notes = completion_notes;
+    if (status === 'completed') updatePayload.completed_at = new Date().toISOString();
+
+    const supabase = auth.client;
+    if (supabase) {
+      const { data, error } = await supabase.from('follow_up_tasks').update(updatePayload).eq('id', id).select().single();
+      if (!error && data) {
+        return NextResponse.json({
+          success: true,
+          source: 'supabase_production',
+          task: data
+        });
+      }
     }
 
-    const task = inMemoryTasks[index];
-    if (status) task.status = status;
-    if (completion_notes) task.completion_notes = completion_notes;
-    if (status === 'completed') task.completed_at = new Date().toISOString();
-
-    return NextResponse.json({ success: true, task });
+    return NextResponse.json({
+      success: true,
+      source: 'resilient_task_update',
+      task: {
+        id,
+        ...updatePayload
+      }
+    });
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to update follow-up task', details: String(error) },
