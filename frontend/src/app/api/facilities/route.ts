@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorizeRequest } from '@/lib/auth/rbac';
 
 export async function GET(req: NextRequest) {
+  // Authorize request: all authenticated roles (citizen, asha, doctor, admin)
+  const auth = await authorizeRequest(req, ['citizen', 'asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   const { searchParams } = new URL(req.url);
   const district = searchParams.get('district');
   const taluka = searchParams.get('taluka');

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorizeRequest } from '@/lib/auth/rbac';
 
 const inMemoryTasks: Record<string, any>[] = [
   {
@@ -13,6 +14,12 @@ const inMemoryTasks: Record<string, any>[] = [
 ];
 
 export async function GET(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const ashaId = searchParams.get('asha_id');
@@ -36,6 +43,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const body = await req.json();
     const { patient_id, assigned_asha_id, task_type, due_date } = body;
@@ -69,6 +82,12 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const body = await req.json();
     const { id, status, completion_notes } = body;

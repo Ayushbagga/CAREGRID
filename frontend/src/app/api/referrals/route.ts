@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorizeRequest } from '@/lib/auth/rbac';
 
 // In-memory store for mock/server route consistency
 const inMemoryReferrals: Record<string, any>[] = [
@@ -20,6 +21,12 @@ const inMemoryReferrals: Record<string, any>[] = [
 ];
 
 export async function GET(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const patientId = searchParams.get('patient_id');
@@ -47,6 +54,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const body = await req.json();
 
@@ -92,6 +105,12 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const body = await req.json();
     const { id, status, discharge_summary, post_discharge_instructions_for_asha, receiving_doctor_id } = body;

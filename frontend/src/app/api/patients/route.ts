@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorizeRequest } from '@/lib/auth/rbac';
 
 export async function POST(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const body = await req.json();
 
@@ -28,6 +35,12 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('query') || '';

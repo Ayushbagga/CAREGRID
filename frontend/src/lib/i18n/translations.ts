@@ -314,7 +314,16 @@ export const translations = {
     loginBtn: 'लॉगिन करा',
     loggedInAs: 'सक्रिय वापरकर्ता:',
     backToHome: '← मुख्य पृष्ठावर जा',
-    sessionActive: 'सत्र सक्रिय'
+    sessionActive: 'सत्र सक्रिय',
+
+    // Authorization & Unauthorized screen
+    unauthorizedTitle: 'प्रवेश प्रतिबंधित (Access Restricted)',
+    unauthorizedSubtitle: 'या आरोग्य कार्यक्षेत्रात प्रवेश करण्यासाठी आपल्या खात्यास आवश्यक भूमिका किंवा परवानगी नाही.',
+    unauthorizedRoleBadge: 'आपली नियुक्त भूमिका:',
+    unauthorizedRequiredBadge: 'आवश्यक परवानगी भूमिका:',
+    unauthorizedGoToWorkspace: 'आपल्या नियुक्त कार्यक्षेत्रात जा',
+    unauthorizedSwitchAccount: 'खाते बदला किंवा लॉगआउट करा',
+    unauthorizedReturnHome: 'मुख्य पृष्ठावर जा'
   },
 
   hi: {
@@ -630,7 +639,16 @@ export const translations = {
     loginBtn: 'लॉगिन करें',
     loggedInAs: 'सक्रिय उपयोगकर्ता:',
     backToHome: '← मुख्य पृष्ठ पर जाएं',
-    sessionActive: 'सत्र सक्रिय'
+    sessionActive: 'सत्र सक्रिय',
+
+    // Authorization & Unauthorized screen
+    unauthorizedTitle: 'प्रवेश प्रतिबंधित (Access Restricted)',
+    unauthorizedSubtitle: 'इस स्वास्थ्य कार्यक्षेत्र में प्रवेश के लिए आपके खाते में आवश्यक भूमिका या अनुमति नहीं है।',
+    unauthorizedRoleBadge: 'आपकी वर्तमान भूमिका:',
+    unauthorizedRequiredBadge: 'आवश्यक अनुमति भूमिका:',
+    unauthorizedGoToWorkspace: 'अपने निर्धारित कार्यक्षेत्र में जाएं',
+    unauthorizedSwitchAccount: 'खाता बदलें या लॉगआउट करें',
+    unauthorizedReturnHome: 'मुख्य पृष्ठ पर लौटें'
   },
 
   en: {
@@ -946,6 +964,15 @@ export const translations = {
     loginBtn: 'Login',
     loggedInAs: 'Signed in as:',
     backToHome: '← Back to Home',
-    sessionActive: 'Session Active'
+    sessionActive: 'Session Active',
+
+    // Authorization & Unauthorized screen
+    unauthorizedTitle: 'Access Restricted (Unauthorized)',
+    unauthorizedSubtitle: 'You do not have the required clinical or administrative role permissions to access this workspace.',
+    unauthorizedRoleBadge: 'Your Assigned Role:',
+    unauthorizedRequiredBadge: 'Required Role Permission:',
+    unauthorizedGoToWorkspace: 'Go to Your Designated Workspace',
+    unauthorizedSwitchAccount: 'Switch Account / Logout',
+    unauthorizedReturnHome: 'Return to Home'
   }
 };

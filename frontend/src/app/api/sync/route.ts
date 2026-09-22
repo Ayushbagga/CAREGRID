@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { authorizeRequest } from '@/lib/auth/rbac';
 
 /**
  * Health & Configuration probe for Cloud Synchronization
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
     const supabaseKey =
@@ -13,24 +19,13 @@ export async function GET() {
       '';
 
     const isConfigured = Boolean(supabaseUrl && supabaseKey);
-    let authReachable = false;
-    let authStatus = 'unconfigured';
-
-    if (isConfigured) {
-      try {
-        const supabase = await createServerClient();
-        const { data, error } = await supabase.auth.getSession();
-        authReachable = !error;
-        authStatus = error ? error.message : 'connected_anonymous';
-      } catch (err) {
-        authStatus = String(err);
-      }
-    }
 
     return NextResponse.json({
       configured: isConfigured,
-      authReachable,
-      authStatus,
+      authReachable: true,
+      authStatus: 'authenticated',
+      userRole: auth.context?.role,
+      userId: auth.context?.user.id,
       hasPublishableKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
       hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
       mode: 'offline-first-resilient'
@@ -48,6 +43,12 @@ export async function GET() {
  * Handles batch / individual queue sync requests from SyncManager.
  */
 export async function POST(req: NextRequest) {
+  // Authorize request: required role is asha or doctor (admin inherits)
+  const auth = await authorizeRequest(req, ['asha', 'doctor']);
+  if (!auth.authorized) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   try {
     const item = await req.json();
 
@@ -58,16 +59,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Initialize official Supabase server client
-    let user = null;
-    try {
-      const supabase = await createServerClient();
-      const { data } = await supabase.auth.getUser();
-      user = data?.user || null;
-    } catch {
-      // Unauthenticated field / demo session
-    }
-
     // Acknowledge sync item idempotently with telemetry
     // Records in local Dexie storage remain 100% preserved
     return NextResponse.json({
@@ -75,8 +66,9 @@ export async function POST(req: NextRequest) {
       id: item.id,
       entity_type: item.entity_type,
       synced_at: new Date().toISOString(),
-      sync_mode: user ? 'authenticated_cloud_upsert' : 'offline_mesh_acknowledged',
-      idempotency_key: item.id
+      sync_mode: 'authenticated_cloud_upsert',
+      idempotency_key: item.id,
+      authorized_role: auth.context?.role
     });
   } catch (error) {
     return NextResponse.json(
