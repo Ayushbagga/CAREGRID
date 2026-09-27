@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { authorizeRequest } from '@/lib/auth/rbac';
+import { errorResponse, successResponse } from '@/lib/api';
+import { AuditLogger } from '@/lib/audit';
 
 // Baseline fallback for offline & initial bootstrapping
 const baselineDemoReferrals: Record<string, any>[] = [
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
@@ -48,11 +50,9 @@ export async function GET(req: NextRequest) {
 
       const { data, error } = await sbQuery.order('created_at', { ascending: false });
       if (!error && data && data.length > 0) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
+        return successResponse({
           referrals: data
-        });
+        }, 200, 'supabase_production');
       }
     }
 
@@ -67,16 +67,11 @@ export async function GET(req: NextRequest) {
       result = result.filter(r => r.status === status);
     }
 
-    return NextResponse.json({
-      success: true,
-      source: 'baseline_demo_referrals',
+    return successResponse({
       referrals: result
-    });
+    }, 200, 'baseline_demo_referrals');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to retrieve referrals', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to retrieve referrals', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }
 
@@ -84,7 +79,7 @@ export async function POST(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
@@ -92,10 +87,7 @@ export async function POST(req: NextRequest) {
 
     const { patient_id, from_facility_id, to_facility_id, referral_reason, required_specialty } = body;
     if (!patient_id || !from_facility_id || !to_facility_id || !referral_reason || !required_specialty) {
-      return NextResponse.json(
-        { error: 'Missing mandatory referral attributes' },
-        { status: 400 }
-      );
+      return errorResponse('Missing mandatory referral attributes: patient_id, from_facility_id, to_facility_id, referral_reason, required_specialty', 400, 'VALIDATION_ERROR');
     }
 
     const shortCode = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -123,11 +115,24 @@ export async function POST(req: NextRequest) {
     if (supabase) {
       const { data, error } = await supabase.from('referrals').insert(referralData).select().single();
       if (!error && data) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
+        // Log forensic referral creation
+        await AuditLogger.logRequest(req, {
+          action: 'REFERRAL_CREATE',
+          entityName: 'referrals',
+          recordId: data.id,
+          userId: auth.context?.user?.id,
+          diff: {
+            referral_code: data.referral_code,
+            urgency_tier: data.urgency_tier,
+            from_facility_id,
+            to_facility_id,
+            required_specialty
+          }
+        }, supabase);
+
+        return successResponse({
           referral: data
-        });
+        }, 201, 'supabase_production');
       }
     }
 
@@ -138,16 +143,11 @@ export async function POST(req: NextRequest) {
       updated_at: new Date().toISOString()
     };
 
-    return NextResponse.json({
-      success: true,
-      source: 'resilient_referral_record',
+    return successResponse({
       referral: fallbackReferral
-    });
+    }, 200, 'resilient_referral_record');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create referral record', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to create referral record', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }
 
@@ -155,7 +155,7 @@ export async function PATCH(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
@@ -163,7 +163,7 @@ export async function PATCH(req: NextRequest) {
     const { id, status, discharge_summary, post_discharge_instructions_for_asha, receiving_doctor_id } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'Referral ID is required' }, { status: 400 });
+      return errorResponse('Referral ID is required', 400, 'VALIDATION_ERROR');
     }
 
     const updatePayload: Record<string, unknown> = {
@@ -179,26 +179,32 @@ export async function PATCH(req: NextRequest) {
     if (supabase) {
       const { data, error } = await supabase.from('referrals').update(updatePayload).eq('id', id).select().single();
       if (!error && data) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
+        // Log status transition in audit logs
+        await AuditLogger.logRequest(req, {
+          action: 'REFERRAL_STATUS_UPDATE',
+          entityName: 'referrals',
+          recordId: id,
+          userId: auth.context?.user?.id,
+          diff: {
+            status,
+            id,
+            has_discharge_summary: Boolean(discharge_summary)
+          }
+        }, supabase);
+
+        return successResponse({
           referral: data
-        });
+        }, 200, 'supabase_production');
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      source: 'resilient_referral_update',
+    return successResponse({
       referral: {
         id,
         ...updatePayload
       }
-    });
+    }, 200, 'resilient_referral_update');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update referral record', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to update referral record', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }

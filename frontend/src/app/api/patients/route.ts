@@ -1,21 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { authorizeRequest } from '@/lib/auth/rbac';
+import { errorResponse, successResponse } from '@/lib/api';
+import { AuditLogger } from '@/lib/audit';
 
 export async function POST(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
     const body = await req.json();
 
     if (!body.full_name || !body.village || !body.primary_phone) {
-      return NextResponse.json(
-        { error: 'Mandatory patient attributes missing' },
-        { status: 400 }
-      );
+      return errorResponse('Mandatory patient attributes missing: full_name, village, primary_phone', 400, 'VALIDATION_ERROR');
     }
 
     const supabase = auth.client;
@@ -46,28 +45,37 @@ export async function POST(req: NextRequest) {
 
       const { data, error } = await supabase.from('patients').insert(patientRecord).select().single();
       if (!error && data) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
+        // Record forensic audit event
+        await AuditLogger.logRequest(req, {
+          action: 'PATIENT_CREATE',
+          entityName: 'patients',
+          recordId: data.id,
+          userId: auth.context?.user?.id,
+          diff: {
+            full_name: data.full_name,
+            village: data.village,
+            is_pregnant: data.is_pregnant,
+            high_risk_pregnancy: data.high_risk_pregnancy
+          }
+        }, supabase);
+
+        return successResponse({
           patient: data
-        });
+        }, 201, 'supabase_production');
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      source: 'resilient_patient_record',
-      patient: {
-        ...body,
-        id: body.id || crypto.randomUUID(),
-        created_at: new Date().toISOString()
-      }
-    });
+    const fallbackRecord = {
+      ...body,
+      id: body.id || crypto.randomUUID(),
+      created_at: new Date().toISOString()
+    };
+
+    return successResponse({
+      patient: fallbackRecord
+    }, 200, 'resilient_patient_record');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to process patient record', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to process patient record', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }
 
@@ -75,7 +83,7 @@ export async function GET(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
@@ -99,12 +107,10 @@ export async function GET(req: NextRequest) {
 
       const { data, error } = await sbQuery.order('created_at', { ascending: false });
       if (!error && data && data.length > 0) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
+        return successResponse({
           patients: data,
           count: data.length
-        });
+        }, 200, 'supabase_production');
       }
     }
 
@@ -146,16 +152,11 @@ export async function GET(req: NextRequest) {
       filtered = filtered.filter(p => p.village.toLowerCase().includes(village.toLowerCase()));
     }
 
-    return NextResponse.json({
-      success: true,
-      source: 'baseline_demo_records',
+    return successResponse({
       patients: filtered,
       count: filtered.length
-    });
+    }, 200, 'baseline_demo_records');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to retrieve patients', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to retrieve patients', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }

@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { authorizeRequest } from '@/lib/auth/rbac';
+import { errorResponse, successResponse } from '@/lib/api';
 
 /**
  * Health & Configuration probe for Cloud Synchronization
@@ -8,7 +9,7 @@ export async function GET(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
 
     const isConfigured = Boolean(supabaseUrl && supabaseKey);
 
-    return NextResponse.json({
+    return successResponse({
       configured: isConfigured,
       authReachable: true,
       authStatus: 'authenticated',
@@ -29,34 +30,29 @@ export async function GET(req: NextRequest) {
       hasPublishableKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
       hasAnonKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
       mode: 'offline-first-resilient'
-    });
+    }, 200, 'sync_probe');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to inspect sync status', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to inspect sync status', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }
 
 /**
  * Cloud Synchronization Endpoint
  * Handles batch / individual queue sync requests from SyncManager.
+ * Guaranteed idempotent via client UUID tracking.
  */
 export async function POST(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
     const item = await req.json();
 
     if (!item || !item.entity_type || !item.payload) {
-      return NextResponse.json(
-        { error: 'Invalid sync payload format' },
-        { status: 400 }
-      );
+      return errorResponse('Invalid sync payload format: entity_type and payload required', 400, 'VALIDATION_ERROR');
     }
 
     const supabase = auth.client;
@@ -138,18 +134,37 @@ export async function POST(req: NextRequest) {
             if (!error) cloudSynced = true;
             break;
           }
-          case 'follow_up': {
+          case 'follow_up':
+          case 'follow_up_tasks': {
             const f = item.payload;
-            const followUpData: Record<string, unknown> = {
+            const liveFollowUp: Record<string, unknown> = {
               patient_id: f.patient_id,
               assigned_asha_id: f.assigned_asha_id,
+              referral_id: f.referral_id || f.originating_referral_id || null,
               task_type: f.task_type || 'routine_follow_up',
               due_date: f.due_date,
-              status: f.status || 'pending'
+              status: f.status || 'pending',
+              instructions: f.instructions || 'Routine community follow-up visit'
             };
-            if (f.id && f.id.length === 36) followUpData.id = f.id;
-            const { error } = await supabase.from('follow_up_tasks').upsert(followUpData);
-            if (!error) cloudSynced = true;
+            if (f.id && f.id.length === 36) liveFollowUp.id = f.id;
+
+            // 1. Try upserting to live 'follow_ups'
+            const { error: liveErr } = await supabase.from('follow_ups').upsert(liveFollowUp);
+            if (!liveErr) {
+              cloudSynced = true;
+            } else {
+              // 2. Compatibility fallback: upsert to legacy 'follow_up_tasks'
+              const legacyFollowUp: Record<string, unknown> = {
+                patient_id: f.patient_id,
+                assigned_asha_id: f.assigned_asha_id,
+                task_type: f.task_type || 'routine_follow_up',
+                due_date: f.due_date,
+                status: f.status || 'pending'
+              };
+              if (f.id && f.id.length === 36) legacyFollowUp.id = f.id;
+              const { error: legacyErr } = await supabase.from('follow_up_tasks').upsert(legacyFollowUp);
+              if (!legacyErr) cloudSynced = true;
+            }
             break;
           }
         }
@@ -160,8 +175,7 @@ export async function POST(req: NextRequest) {
 
     // Acknowledge sync item idempotently with telemetry
     // Records in local Dexie storage remain 100% preserved
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       id: item.id,
       entity_type: item.entity_type,
       synced_at: new Date().toISOString(),
@@ -169,11 +183,8 @@ export async function POST(req: NextRequest) {
       cloud_synced: cloudSynced,
       idempotency_key: item.id,
       authorized_role: auth.context?.role
-    });
+    }, 200, 'sync_receipt');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to process sync queue item', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to process sync queue item', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }

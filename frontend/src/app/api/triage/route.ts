@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeRequest } from '@/lib/auth/rbac';
+import { errorResponse } from '@/lib/api';
+import { AuditLogger } from '@/lib/audit';
 
 const AI_SERVICE_URL = process.env.NEXT_PUBLIC_AI_SERVICE_URL || 'http://localhost:8000';
 const AI_SERVICE_API_KEY = process.env.AI_SERVICE_API_KEY || 'caregrid-internal-dev-key-change-in-prod';
@@ -9,7 +11,13 @@ const AI_SERVICE_API_KEY = process.env.AI_SERVICE_API_KEY || 'caregrid-internal-
  */
 export async function GET() {
   return NextResponse.json(
-    { error: 'Method Not Allowed. /api/triage supports POST only.' },
+    { 
+      success: false, 
+      error: 'Method Not Allowed. /api/triage supports POST only.',
+      code: 'METHOD_NOT_ALLOWED',
+      status: 405,
+      timestamp: new Date().toISOString()
+    },
     { status: 405, headers: { Allow: 'POST' } }
   );
 }
@@ -18,7 +26,7 @@ export async function POST(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   const DISCLAIMER =
@@ -116,7 +124,7 @@ export async function POST(req: NextRequest) {
 
     // High Risk Symptoms
     const symptomsLower = symptoms.map(s => s.toLowerCase());
-    if (symptomsLower.some(s => s.includes('chest') || s.includes('pain') && s.includes('chest'))) {
+    if (symptomsLower.some(s => s.includes('chest') || (s.includes('pain') && s.includes('chest')))) {
       dangerSigns.push('Acute Chest Pain Alert');
       isEmergency = true;
     }
@@ -193,11 +201,24 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Forensic audit log for high-urgency escalations (Emergency Red & Urgent Amber)
+    if (urgencyTier === 'emergency_red' || urgencyTier === 'urgent_amber') {
+      await AuditLogger.logRequest(req, {
+        action: 'TRIAGE_ESCALATE',
+        entityName: 'triage_assessments',
+        recordId: payload.encounter_id && payload.encounter_id.length === 36 ? payload.encounter_id : null,
+        userId: auth.context?.user?.id,
+        diff: {
+          urgency_tier: urgencyTier,
+          priority_score: priorityScore,
+          danger_signs_count: dangerSigns.length,
+          transport_recommended: transportRecommended
+        }
+      }, supabase);
+    }
+
     return NextResponse.json(assessment);
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to process triage request', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to process triage request', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }

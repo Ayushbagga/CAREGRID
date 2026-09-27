@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { authorizeRequest } from '@/lib/auth/rbac';
+import { errorResponse, successResponse } from '@/lib/api';
+import { AuditLogger } from '@/lib/audit';
 
 // Baseline fallback for offline & initial bootstrapping
 const baselineDemoTasks: Record<string, any>[] = [
@@ -18,7 +20,7 @@ export async function GET(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
@@ -29,24 +31,36 @@ export async function GET(req: NextRequest) {
 
     const supabase = auth.client;
     if (supabase) {
-      let sbQuery = supabase.from('follow_up_tasks').select('*');
+      // 1. Target live production table: 'follow_ups' (per 001_initial_caregrid_schema.sql)
+      let liveQuery = supabase.from('follow_ups').select('*');
       if (ashaId) {
-        sbQuery = sbQuery.eq('assigned_asha_id', ashaId);
+        liveQuery = liveQuery.eq('assigned_asha_id', ashaId);
       }
       if (patientId) {
-        sbQuery = sbQuery.eq('patient_id', patientId);
+        liveQuery = liveQuery.eq('patient_id', patientId);
       }
       if (status) {
-        sbQuery = sbQuery.eq('status', status);
+        liveQuery = liveQuery.eq('status', status);
       }
 
-      const { data, error } = await sbQuery.order('due_date', { ascending: true });
-      if (!error && data && data.length > 0) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
-          tasks: data
-        });
+      const { data: liveData, error: liveError } = await liveQuery.order('due_date', { ascending: true });
+      if (!liveError && liveData && liveData.length > 0) {
+        return successResponse({
+          tasks: liveData
+        }, 200, 'supabase_production');
+      }
+
+      // 2. Compatibility check: query legacy table 'follow_up_tasks' if needed
+      let legacyQuery = supabase.from('follow_up_tasks').select('*');
+      if (ashaId) legacyQuery = legacyQuery.eq('assigned_asha_id', ashaId);
+      if (patientId) legacyQuery = legacyQuery.eq('patient_id', patientId);
+      if (status) legacyQuery = legacyQuery.eq('status', status);
+
+      const { data: legacyData, error: legacyError } = await legacyQuery.order('due_date', { ascending: true });
+      if (!legacyError && legacyData && legacyData.length > 0) {
+        return successResponse({
+          tasks: legacyData
+        }, 200, 'supabase_production_legacy');
       }
     }
 
@@ -61,16 +75,11 @@ export async function GET(req: NextRequest) {
       result = result.filter(t => t.status === status);
     }
 
-    return NextResponse.json({
-      success: true,
-      source: 'baseline_demo_tasks',
+    return successResponse({
       tasks: result
-    });
+    }, 200, 'baseline_demo_tasks');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to retrieve follow-up tasks', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to retrieve follow-up tasks', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }
 
@@ -78,7 +87,7 @@ export async function POST(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
@@ -86,17 +95,14 @@ export async function POST(req: NextRequest) {
     const { patient_id, assigned_asha_id, task_type, due_date } = body;
 
     if (!patient_id || !assigned_asha_id || !due_date) {
-      return NextResponse.json(
-        { error: 'Missing mandatory follow-up task attributes' },
-        { status: 400 }
-      );
+      return errorResponse('Missing mandatory follow-up task attributes: patient_id, assigned_asha_id, due_date', 400, 'VALIDATION_ERROR');
     }
 
     const taskData: Record<string, unknown> = {
       patient_id,
       assigned_asha_id,
-      originating_referral_id: body.originating_referral_id || null,
-      task_type: task_type || 'routine_follow_up',
+      originating_referral_id: body.originating_referral_id || body.referral_id || null,
+      task_type: task_type || 'post_referral_check',
       due_date,
       status: body.status || 'pending'
     };
@@ -107,13 +113,47 @@ export async function POST(req: NextRequest) {
 
     const supabase = auth.client;
     if (supabase) {
+      // 1. Try live production table: 'follow_ups'
+      const liveDataRecord: Record<string, unknown> = {
+        patient_id,
+        assigned_asha_id,
+        referral_id: body.referral_id || body.originating_referral_id || null,
+        task_type: task_type || 'post_referral_check',
+        due_date,
+        status: body.status || 'pending',
+        instructions: body.instructions || 'Post-referral patient health check'
+      };
+      if (body.id && body.id.length === 36) liveDataRecord.id = body.id;
+
+      const { data: liveResult, error: liveErr } = await supabase.from('follow_ups').insert(liveDataRecord).select().single();
+      if (!liveErr && liveResult) {
+        await AuditLogger.logRequest(req, {
+          action: 'FOLLOW_UP_CREATE',
+          entityName: 'follow_ups',
+          recordId: liveResult.id,
+          userId: auth.context?.user?.id,
+          diff: { patient_id, assigned_asha_id, task_type, due_date }
+        }, supabase);
+
+        return successResponse({
+          task: liveResult
+        }, 201, 'supabase_production');
+      }
+
+      // 2. Compatibility fallback: insert into 'follow_up_tasks'
       const { data, error } = await supabase.from('follow_up_tasks').insert(taskData).select().single();
       if (!error && data) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
+        await AuditLogger.logRequest(req, {
+          action: 'FOLLOW_UP_CREATE',
+          entityName: 'follow_up_tasks',
+          recordId: data.id,
+          userId: auth.context?.user?.id,
+          diff: { patient_id, assigned_asha_id, task_type, due_date }
+        }, supabase);
+
+        return successResponse({
           task: data
-        });
+        }, 201, 'supabase_production_legacy');
       }
     }
 
@@ -124,16 +164,11 @@ export async function POST(req: NextRequest) {
       updated_at: new Date().toISOString()
     };
 
-    return NextResponse.json({
-      success: true,
-      source: 'resilient_task_record',
+    return successResponse({
       task: fallbackTask
-    });
+    }, 200, 'resilient_task_record');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create follow-up task', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to create follow-up task', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }
 
@@ -141,48 +176,65 @@ export async function PATCH(req: NextRequest) {
   // Authorize request: required role is asha or doctor (admin inherits)
   const auth = await authorizeRequest(req, ['asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   try {
     const body = await req.json();
-    const { id, status, completion_notes } = body;
+    const { id, status, completion_notes, patient_condition } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
+      return errorResponse('Task ID is required', 400, 'VALIDATION_ERROR');
     }
 
     const updatePayload: Record<string, unknown> = {
       updated_at: new Date().toISOString()
     };
     if (status) updatePayload.status = status;
-    if (completion_notes !== undefined) updatePayload.completion_notes = completion_notes;
+    if (completion_notes !== undefined) updatePayload.notes = completion_notes;
+    if (patient_condition) updatePayload.patient_condition = patient_condition;
     if (status === 'completed') updatePayload.completed_at = new Date().toISOString();
 
     const supabase = auth.client;
     if (supabase) {
-      const { data, error } = await supabase.from('follow_up_tasks').update(updatePayload).eq('id', id).select().single();
+      // 1. Try updating live production table 'follow_ups'
+      const { data: liveData, error: liveErr } = await supabase.from('follow_ups').update(updatePayload).eq('id', id).select().single();
+      if (!liveErr && liveData) {
+        await AuditLogger.logRequest(req, {
+          action: 'FOLLOW_UP_COMPLETE',
+          entityName: 'follow_ups',
+          recordId: id,
+          userId: auth.context?.user?.id,
+          diff: { id, status, completed: status === 'completed' }
+        }, supabase);
+
+        return successResponse({
+          task: liveData
+        }, 200, 'supabase_production');
+      }
+
+      // 2. Compatibility fallback: update 'follow_up_tasks'
+      const legacyPayload = {
+        updated_at: updatePayload.updated_at,
+        ...(status && { status }),
+        ...(completion_notes !== undefined && { completion_notes }),
+        ...(status === 'completed' && { completed_at: updatePayload.completed_at })
+      };
+      const { data, error } = await supabase.from('follow_up_tasks').update(legacyPayload).eq('id', id).select().single();
       if (!error && data) {
-        return NextResponse.json({
-          success: true,
-          source: 'supabase_production',
+        return successResponse({
           task: data
-        });
+        }, 200, 'supabase_production_legacy');
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      source: 'resilient_task_update',
+    return successResponse({
       task: {
         id,
         ...updatePayload
       }
-    });
+    }, 200, 'resilient_task_update');
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update follow-up task', details: String(error) },
-      { status: 500 }
-    );
+    return errorResponse('Failed to update follow-up task', 500, 'INTERNAL_SERVER_ERROR', error);
   }
 }

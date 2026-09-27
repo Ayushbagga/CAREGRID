@@ -1,8 +1,27 @@
 import { offlineDb } from './db';
 import type { OfflineSyncItem } from '@/types/healthcare';
 
+const LAST_SYNC_KEY = 'caregrid_last_synced_at';
+
+export interface SyncTelemetry {
+  pendingCount: number;
+  lastSyncTime: string | null;
+  isSyncing: boolean;
+  failedCount: number;
+}
+
 export class SyncManager {
   private static isSyncing = false;
+
+  public static getLastSyncTime(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(LAST_SYNC_KEY);
+  }
+
+  public static setLastSyncTime(timestamp: string): void {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(LAST_SYNC_KEY, timestamp);
+  }
 
   public static async enqueue(
     entity_type: OfflineSyncItem['entity_type'],
@@ -28,6 +47,19 @@ export class SyncManager {
     return await offlineDb.syncQueue.where('status').equals('PENDING').count();
   }
 
+  public static async getTelemetry(): Promise<SyncTelemetry> {
+    const pendingCount = await this.getPendingCount();
+    const failedCount = await offlineDb.syncQueue.filter(item => (item.retry_count || 0) > 0).count();
+    const lastSyncTime = this.getLastSyncTime();
+
+    return {
+      pendingCount,
+      lastSyncTime,
+      isSyncing: this.isSyncing,
+      failedCount
+    };
+  }
+
   public static async processQueue(): Promise<{ synced: number; failed: number }> {
     if (this.isSyncing || typeof navigator === 'undefined' || !navigator.onLine) {
       return { synced: 0, failed: 0 };
@@ -41,7 +73,7 @@ export class SyncManager {
       const pendingItems = await offlineDb.syncQueue
         .where('status')
         .equals('PENDING')
-        .limit(20)
+        .limit(25)
         .toArray();
 
       for (const item of pendingItems) {
@@ -60,17 +92,21 @@ export class SyncManager {
           } else {
             await offlineDb.syncQueue.update(item.id, {
               status: 'PENDING',
-              retry_count: item.retry_count + 1
+              retry_count: (item.retry_count || 0) + 1
             });
             failed++;
           }
         } catch (err) {
           await offlineDb.syncQueue.update(item.id, {
             status: 'PENDING',
-            retry_count: item.retry_count + 1
+            retry_count: (item.retry_count || 0) + 1
           });
           failed++;
         }
+      }
+
+      if (synced > 0) {
+        this.setLastSyncTime(new Date().toISOString());
       }
     } finally {
       this.isSyncing = false;

@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { authorizeRequest } from '@/lib/auth/rbac';
+import { errorResponse, successResponse } from '@/lib/api';
 
 export async function GET(req: NextRequest) {
   // Authorize request: all authenticated roles (citizen, asha, doctor, admin)
   const auth = await authorizeRequest(req, ['citizen', 'asha', 'doctor']);
   if (!auth.authorized) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+    return errorResponse(auth.error || 'Unauthorized', auth.status, auth.status === 401 ? 'UNAUTHORIZED' : 'FORBIDDEN');
   }
 
   const { searchParams } = new URL(req.url);
@@ -51,13 +52,12 @@ export async function GET(req: NextRequest) {
 
       const { data, error } = await query.order('name', { ascending: true });
       if (!error && data && data.length > 0) {
-        return NextResponse.json({
+        return successResponse({
           status: 'success',
-          source: 'supabase_production',
           filter: { district, taluka },
           facilities: data,
           count: data.length
-        });
+        }, 200, 'supabase_production');
       }
     }
   } catch (err) {
@@ -73,11 +73,10 @@ export async function GET(req: NextRequest) {
     filteredFallback = filteredFallback.filter(f => f.taluka.toLowerCase().includes(taluka.toLowerCase()));
   }
 
-  return NextResponse.json({
+  return successResponse({
     status: 'success',
-    source: 'baseline_fallback',
     filter: { district, taluka },
     facilities: filteredFallback,
     count: filteredFallback.length
-  });
+  }, 200, 'baseline_fallback');
 }
