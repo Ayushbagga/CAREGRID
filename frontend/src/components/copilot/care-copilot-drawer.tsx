@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import { getCopilotI18n } from '@/lib/copilot/copilot-i18n';
+import { getPhaseDI18n } from '@/lib/i18n/phase-d-i18n';
+import { voiceClient } from '@/lib/voice';
 import { CareGridSymbol } from '@/components/shared/caregrid-logo';
 import { useNetworkStatus } from '@/hooks/use-network-status';
 import type { CopilotQueryResponse, SuggestedAction, UserRole } from '@/lib/copilot';
@@ -13,10 +15,14 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   ShieldCheck, 
-  ArrowRight,
-  Database,
-  Activity,
-  AlertCircle
+  ArrowRight, 
+  Database, 
+  Activity, 
+  AlertCircle,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 interface CareCopilotDrawerProps {
@@ -55,6 +61,62 @@ export const CareCopilotDrawer: React.FC<CareCopilotDrawerProps> = ({ role, defa
   const [pendingConfirmAction, setPendingConfirmAction] = useState<SuggestedAction | null>(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
   const [isActionLoading, setIsActionLoading] = useState(false);
+
+  // Phase D Voice Assistant Integration
+  const tD = getPhaseDI18n(locale);
+  const [isListening, setIsListening] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [voiceNotice, setVoiceNotice] = useState<string | null>(null);
+
+  // Clean up voice upon unmount or drawer close
+  useEffect(() => {
+    return () => {
+      voiceClient.abortListening();
+      voiceClient.stopSpeaking();
+    };
+  }, []);
+
+  const toggleVoiceInput = async () => {
+    if (!voiceClient.isInputSupported()) {
+      setVoiceNotice(tD.voiceNotSupported);
+      setTimeout(() => setVoiceNotice(null), 3500);
+      return;
+    }
+    if (isListening) {
+      await voiceClient.stopListening();
+      setIsListening(false);
+      setVoiceNotice(null);
+    } else {
+      setIsListening(true);
+      setVoiceNotice(tD.voiceListening);
+      await voiceClient.startListening(
+        { locale: locale as any },
+        result => {
+          setInputValue(result.transcript);
+          if (result.isFinal) {
+            setIsListening(false);
+            setVoiceNotice(null);
+          }
+        },
+        err => {
+          setIsListening(false);
+          setVoiceNotice(err.code === 'not-allowed' ? tD.voicePermissionDenied : tD.voiceError);
+          setTimeout(() => setVoiceNotice(null), 3500);
+        }
+      );
+    }
+  };
+
+  const handleToggleSpeak = async (msgId: string, text: string) => {
+    if (speakingMsgId === msgId) {
+      voiceClient.stopSpeaking();
+      setSpeakingMsgId(null);
+    } else {
+      setSpeakingMsgId(msgId);
+      await voiceClient.speak(text, { locale: locale as any });
+      setSpeakingMsgId(null);
+    }
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -355,7 +417,24 @@ export const CareCopilotDrawer: React.FC<CareCopilotDrawerProps> = ({ role, defa
                       <span className="font-bold">
                         {msg.sender === 'user' ? 'You' : 'CAREGRID Assist'}
                       </span>
-                      <span>{msg.timestamp}</span>
+                      <div className="flex items-center space-x-1.5">
+                        {msg.sender === 'assistant' && (
+                          <button
+                            type="button"
+                            onClick={() => handleToggleSpeak(msg.id, msg.text)}
+                            title={speakingMsgId === msg.id ? tD.voiceStopSpeaking : tD.voiceSpeakSummary}
+                            aria-label={speakingMsgId === msg.id ? tD.voiceStopSpeaking : tD.voiceSpeakSummary}
+                            className="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-slate-800 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-teal-500"
+                          >
+                            {speakingMsgId === msg.id ? (
+                              <VolumeX className="w-3.5 h-3.5 text-teal-600 animate-pulse" />
+                            ) : (
+                              <Volume2 className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        )}
+                        <span>{msg.timestamp}</span>
+                      </div>
                     </div>
 
                     {/* Main Text */}
@@ -504,6 +583,23 @@ export const CareCopilotDrawer: React.FC<CareCopilotDrawerProps> = ({ role, defa
                 }}
                 className="flex items-center space-x-2"
               >
+                <button
+                  type="button"
+                  onClick={toggleVoiceInput}
+                  title={isListening ? tD.voiceStopListening : tD.voiceStartListening}
+                  aria-label={isListening ? tD.voiceStopListening : tD.voiceStartListening}
+                  className={`p-2 rounded-lg transition-colors border focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                    isListening
+                      ? 'bg-rose-50 text-rose-700 border-rose-300 animate-pulse'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300'
+                  }`}
+                >
+                  {isListening ? (
+                    <MicOff className="w-4 h-4 text-rose-600" />
+                  ) : (
+                    <Mic className="w-4 h-4 text-slate-600" />
+                  )}
+                </button>
                 <input
                   type="text"
                   value={inputValue}
@@ -514,12 +610,17 @@ export const CareCopilotDrawer: React.FC<CareCopilotDrawerProps> = ({ role, defa
                 <button
                   type="submit"
                   disabled={!inputValue.trim() || isLoading}
-                  className="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2 rounded-lg font-bold text-xs flex items-center space-x-1 disabled:opacity-50 transition-colors shadow-2xs"
+                  className="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2 rounded-lg font-bold text-xs flex items-center space-x-1 disabled:opacity-50 transition-colors shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">{tCop.sendBtn}</span>
                 </button>
               </form>
+              {voiceNotice && (
+                <p className="text-[10px] font-semibold text-teal-700 mt-1 animate-pulse px-1" role="status">
+                  {voiceNotice}
+                </p>
+              )}
               <div className="flex justify-between items-center text-[9px] text-slate-400 mt-1.5 px-1">
                 <span>{tCop.groundedEngine}</span>
                 <span className="flex items-center space-x-1">

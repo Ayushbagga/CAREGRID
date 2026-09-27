@@ -12,6 +12,7 @@ import { AshaFollowUpList } from '@/components/asha/asha-follow-up-list';
 import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { SyncStatusModal } from '@/components/asha/sync-status-modal';
 import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
+import { NotificationBell } from '@/components/notifications';
 import { 
   Users, 
   HeartHandshake, 
@@ -89,6 +90,7 @@ export default function AshaDashboardPage() {
               <span>{pendingCount > 0 ? `${pendingCount} ${t.pendingSyncLabel}` : 'Synced'}</span>
             </button>
 
+            <NotificationBell role="asha" />
             <LanguageSwitcher />
           </div>
         </div>
@@ -179,6 +181,9 @@ export default function AshaDashboardPage() {
             onSelectForScreening={patientId => {
               setSelectedPatientIdForScreening(patientId);
               setActiveTab('screening');
+            }}
+            onSelectForFollowUp={() => {
+              setActiveTab('followups');
             }}
             onNewRegistration={() => setActiveTab('intake')}
             onViewRecord={patientId => setSelectedPatientIdForRecord(patientId)}

@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
+import { getPhaseDI18n } from '@/lib/i18n/phase-d-i18n';
 import { offlineDb } from '@/lib/offline-sync/db';
 import { SyncManager, type SyncTelemetry } from '@/lib/offline-sync/sync-manager';
-import { RefreshCw, Database, X, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, Database, X, Clock, AlertTriangle, CheckCircle2, RotateCw } from 'lucide-react';
 import type { OfflineSyncItem } from '@/types/healthcare';
 
 interface SyncStatusModalProps {
@@ -14,6 +15,8 @@ interface SyncStatusModalProps {
 
 export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClose }) => {
   const { t, locale } = useLanguage();
+  const tD = getPhaseDI18n(locale);
+
   const [pendingItems, setPendingItems] = useState<OfflineSyncItem[]>([]);
   const [telemetry, setTelemetry] = useState<SyncTelemetry | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -33,6 +36,10 @@ export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClos
   useEffect(() => {
     if (isOpen) {
       loadData();
+      const unsub = SyncManager.onTelemetryChange(tel => {
+        setTelemetry(tel);
+      });
+      return () => unsub();
     }
   }, [isOpen, loadData]);
 
@@ -56,9 +63,27 @@ export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClos
     }
   };
 
+  const handleRetryFailed = async (itemId?: string) => {
+    setIsSyncing(true);
+    setResultMsg(null);
+    try {
+      const { synced, failed } = await SyncManager.retryFailed(itemId);
+      const success = failed === 0;
+      const msg = locale === 'mr'
+        ? `पुन्हा प्रयत्न पूर्ण: ${synced} यशस्वी, ${failed} अयशस्वी.`
+        : locale === 'hi'
+        ? `पुनः प्रयास पूर्ण: ${synced} सफल, ${failed} असफल.`
+        : `Retry complete: ${synced} synced, ${failed} failed.`;
+      setResultMsg({ text: msg, success });
+      await loadData();
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const formatLastSync = (isoString: string | null) => {
     if (!isoString) {
-      return locale === 'mr' ? 'अद्याप सिंक नाही (Never)' : locale === 'hi' ? 'अभी तक सिंक नहीं (Never)' : 'Never';
+      return locale === 'mr' ? 'अद्याप सिंक नाही' : locale === 'hi' ? 'अभी तक सिंक नहीं' : 'Never';
     }
     try {
       return new Date(isoString).toLocaleString();
@@ -98,34 +123,84 @@ export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClos
     }
   };
 
-  const lastSyncLabel = locale === 'mr' ? 'शेवटचा यशस्वी सिंक' : locale === 'hi' ? 'अंतिम सफल सिंक' : 'Last Synced';
+  const getStatusBadge = () => {
+    const s = telemetry?.status || 'IDLE';
+    switch (s) {
+      case 'OFFLINE':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-800 border border-slate-300">
+            {tD.syncStateOffline}
+          </span>
+        );
+      case 'SYNCING':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300 animate-pulse">
+            {tD.syncStateSyncing}
+          </span>
+        );
+      case 'SYNC_FAILED':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+            {tD.syncStateFailed}
+          </span>
+        );
+      case 'SYNCED':
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">
+            {tD.syncStateSynced}
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+            {tD.syncStateSynced}
+          </span>
+        );
+    }
+  };
+
+  const lastSyncLabel = tD.lastSyncLabel || 'Last Synced';
   const retryLabel = locale === 'mr' ? 'पुन्हा प्रयत्न' : locale === 'hi' ? 'पुनः प्रयास' : 'retries';
-  const syncInProgressLabel = locale === 'mr' ? 'डेटा सिंक सुरू आहे...' : locale === 'hi' ? 'डेटा सिंक हो रहा है...' : 'Synchronizing queue...';
+  const syncInProgressLabel = tD.syncStateSyncing;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 space-y-4">
+    <div 
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sync-modal-title"
+    >
+      <div className="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-lg w-full p-5 space-y-4 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start shrink-0">
           <div className="flex items-center space-x-2.5">
             <div className="p-2 bg-teal-50 rounded-lg text-teal-700 border border-teal-100">
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-base">{t.syncModalTitle}</h3>
+              <h3 id="sync-modal-title" className="font-bold text-slate-900 text-base">
+                {t.syncModalTitle}
+              </h3>
               <p className="text-[11px] text-slate-500">{t.syncModalDesc}</p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close dialog"
             className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Macroscopic Status Badge */}
+        <div className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200/80 rounded-lg shrink-0">
+          <span className="text-xs font-semibold text-slate-600">Current Status:</span>
+          {getStatusBadge()}
+        </div>
+
         {/* Telemetry Bar */}
-        <div className="grid grid-cols-2 gap-2.5 p-3 bg-slate-50 border border-slate-200/80 rounded-lg text-xs">
+        <div className="grid grid-cols-2 gap-2.5 p-3 bg-slate-50 border border-slate-200/80 rounded-lg text-xs shrink-0">
           <div className="flex items-center space-x-2">
             <Clock className="w-4 h-4 text-slate-400 shrink-0" />
             <div className="min-w-0">
@@ -158,7 +233,7 @@ export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClos
         {/* Result Message */}
         {resultMsg && (
           <div
-            className={`p-3 rounded-lg text-xs font-medium flex items-center space-x-2 border ${
+            className={`p-3 rounded-lg text-xs font-medium flex items-center space-x-2 border shrink-0 ${
               resultMsg.success
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
                 : 'bg-amber-50 border-amber-200 text-amber-900'
@@ -174,15 +249,27 @@ export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClos
         )}
 
         {/* Queue Items */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+        <div className="space-y-2 flex-1 overflow-hidden flex flex-col">
+          <div className="flex justify-between items-center text-xs font-bold text-slate-700 shrink-0">
             <span>{t.pendingItemsCount}:</span>
-            <span className="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-teal-200">
-              {pendingItems.length}
-            </span>
+            <div className="flex items-center space-x-2">
+              <span className="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-teal-200">
+                {pendingItems.length}
+              </span>
+              {telemetry && telemetry.failedCount > 0 && (
+                <button
+                  onClick={() => handleRetryFailed()}
+                  disabled={isSyncing}
+                  className="text-[11px] font-bold text-amber-700 hover:text-amber-800 underline flex items-center space-x-1"
+                >
+                  <RotateCw className="w-3 h-3" />
+                  <span>{tD.retryAllBtn}</span>
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="max-h-52 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 text-xs">
+          <div className="overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 text-xs flex-1">
             {pendingItems.length === 0 ? (
               <div className="p-6 text-center text-slate-400 flex flex-col items-center justify-center space-y-1">
                 <CheckCircle2 className="w-6 h-6 text-emerald-500 mb-1" />
@@ -222,9 +309,21 @@ export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClos
                       </p>
                     </div>
 
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-slate-200/80 text-slate-700 font-semibold uppercase tracking-wider shrink-0">
-                      {item.status}
-                    </span>
+                    <div className="flex items-center space-x-1.5 shrink-0">
+                      {retries > 0 && (
+                        <button
+                          onClick={() => handleRetryFailed(item.id)}
+                          disabled={isSyncing}
+                          title={tD.retryItemBtn}
+                          className="p-1 rounded hover:bg-slate-200 text-slate-600"
+                        >
+                          <RotateCw className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-slate-200/80 text-slate-700 font-semibold uppercase tracking-wider">
+                        {item.status}
+                      </span>
+                    </div>
                   </div>
                 );
               })
@@ -233,7 +332,7 @@ export const SyncStatusModal: React.FC<SyncStatusModalProps> = ({ isOpen, onClos
         </div>
 
         {/* Footer Actions */}
-        <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100">
+        <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100 shrink-0">
           <button
             onClick={onClose}
             className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import type { Referral, Patient, Facility, ReferralStatus } from '@/types/healthcare';
 import { ReferralService } from '@/lib/offline-sync/referral-service';
 import { PatientService } from '@/lib/offline-sync/patient-service';
 import { FacilityService } from '@/lib/offline-sync/facility-service';
+import { useRealtimeTable } from '@/lib/realtime';
 import { ReferralStepper } from './referral-stepper';
 import { 
   GitPullRequest, 
@@ -49,7 +50,7 @@ export function ReferralManager({
   const [ashaInstructions, setAshaInstructions] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [allReferrals, allPatients, allFacilities] = await Promise.all([
@@ -72,11 +73,16 @@ export function ReferralManager({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
+
+  // Realtime subscription for referral updates
+  useRealtimeTable('referrals', useCallback(() => {
+    loadData();
+  }, [loadData]));
 
   const handleAcknowledge = async (referralId: string) => {
     try {

@@ -9,6 +9,7 @@ import { ReferralCreateModal } from '@/components/referrals/referral-create-moda
 import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { PatientService } from '@/lib/offline-sync/patient-service';
 import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
+import { NotificationBell } from '@/components/notifications';
 import type { Patient } from '@/types/healthcare';
 import { GitPullRequest, ArrowLeft, Languages } from 'lucide-react';
 import Link from 'next/link';
@@ -56,6 +57,7 @@ export default function ReferralsPage() {
           </div>
 
           <div className="flex items-center space-x-2">
+            <NotificationBell role="doctor" />
             <LanguageSwitcher />
           </div>
         </div>

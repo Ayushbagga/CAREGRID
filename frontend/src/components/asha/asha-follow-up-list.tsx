@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import type { FollowUpTask, Patient, Referral } from '@/types/healthcare';
 import { FollowUpService } from '@/lib/offline-sync/follow-up-service';
 import { PatientService } from '@/lib/offline-sync/patient-service';
 import { ReferralService } from '@/lib/offline-sync/referral-service';
+import { useRealtimeTable } from '@/lib/realtime';
 import { 
   HeartHandshake, 
   Clock, 
@@ -45,7 +46,7 @@ export function AshaFollowUpList({ ashaId = 'asha-001', onViewHealthRecord }: As
   const [spo2, setSpo2] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const [taskData, patientList, referralList] = await Promise.all([
@@ -68,11 +69,16 @@ export function AshaFollowUpList({ ashaId = 'asha-001', onViewHealthRecord }: As
     } finally {
       setLoading(false);
     }
-  };
+  }, [ashaId]);
 
   useEffect(() => {
     loadData();
-  }, [ashaId]);
+  }, [loadData]);
+
+  // Realtime subscription for follow-up task updates
+  useRealtimeTable('follow_up_tasks', useCallback(() => {
+    loadData();
+  }, [loadData]));
 
   const handleCompleteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

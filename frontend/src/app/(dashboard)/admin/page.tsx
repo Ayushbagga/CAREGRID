@@ -10,6 +10,7 @@ import { FacilityReadinessPanel } from '@/components/analytics/facility-readines
 import { FollowUpAdherencePanel } from '@/components/analytics/follow-up-adherence-panel';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
+import { NotificationBell } from '@/components/notifications';
 import { 
   Building2, 
   GitPullRequest, 
@@ -96,6 +97,7 @@ export default function AdminDashboardPage() {
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
 
+            <NotificationBell role="admin" />
             <LanguageSwitcher />
           </div>
         </div>

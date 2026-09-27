@@ -14,6 +14,7 @@ import { ReferralCreateModal } from '@/components/referrals/referral-create-moda
 import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { PatientService } from '@/lib/offline-sync/patient-service';
 import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
+import { NotificationBell } from '@/components/notifications';
 import { 
   Stethoscope, 
   ListOrdered, 
@@ -84,6 +85,7 @@ export default function DoctorDashboardPage() {
               {isOnline ? 'Online' : 'Offline Mode'}
             </span>
 
+            <NotificationBell role="doctor" />
             <LanguageSwitcher />
           </div>
         </div>

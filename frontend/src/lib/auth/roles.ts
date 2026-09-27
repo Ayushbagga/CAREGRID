@@ -1,6 +1,7 @@
 import type { User } from '@supabase/supabase-js';
 
 export type CareGridRole = 'citizen' | 'asha' | 'doctor' | 'admin';
+export type UserRole = CareGridRole;
 
 /**
  * Normalizes any Supabase role string into one of the 4 canonical CAREGRID roles:

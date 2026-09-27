@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/lib/i18n/context';
 import { QueueService } from '@/lib/offline-sync/queue-service';
 import { PatientService } from '@/lib/offline-sync/patient-service';
+import { useRealtimeTable } from '@/lib/realtime';
 import { 
   Users, 
   Clock, 
@@ -37,7 +38,7 @@ export const OPDQueueManager: React.FC<OPDQueueManagerProps> = ({
   const [tokenUrgency, setTokenUrgency] = useState<UrgencyTier>('routine_green');
   const [allPatientsList, setAllPatientsList] = useState<Patient[]>([]);
 
-  const loadQueue = async () => {
+  const loadQueue = useCallback(async () => {
     setIsLoading(true);
     try {
       const appointments = await QueueService.getFacilityQueue(facilityId);
@@ -58,11 +59,16 @@ export const OPDQueueManager: React.FC<OPDQueueManagerProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [facilityId, selectedPatientId]);
 
   useEffect(() => {
     loadQueue();
-  }, [facilityId]);
+  }, [loadQueue]);
+
+  // Realtime subscription for OPD queue appointments
+  useRealtimeTable('appointments', useCallback(() => {
+    loadQueue();
+  }, [loadQueue]));
 
   const handleUpdateStatus = async (id: string, newStatus: AppointmentStatus) => {
     await QueueService.updateStatus(id, newStatus);
