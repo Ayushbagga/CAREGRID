@@ -9,6 +9,7 @@ import { TriageDistributionChart } from '@/components/analytics/triage-distribut
 import { FacilityReadinessPanel } from '@/components/analytics/facility-readiness-panel';
 import { FollowUpAdherencePanel } from '@/components/analytics/follow-up-adherence-panel';
 import { LanguageSwitcher } from '@/components/shared/language-switcher';
+import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
 import { 
   Building2, 
   GitPullRequest, 
@@ -107,6 +108,8 @@ export default function AdminDashboardPage() {
           <ShieldCheck className="w-4 h-4 text-purple-600 shrink-0" />
           <span className="font-medium">{t.plannedAdminNotice}</span>
         </div>
+
+        <CommandCenterSummary role="admin" />
 
         {/* District Filter Pill Bar */}
         <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2">
@@ -331,6 +334,9 @@ export default function AdminDashboardPage() {
           </>
         )}
       </main>
+
+      {/* Intelligent Clinical Care Copilot */}
+      <CareCopilotDrawer role="admin" />
     </div>
   );
 }

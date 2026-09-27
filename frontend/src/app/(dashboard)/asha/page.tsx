@@ -11,6 +11,7 @@ import { PatientRoster } from '@/components/asha/patient-roster';
 import { AshaFollowUpList } from '@/components/asha/asha-follow-up-list';
 import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { SyncStatusModal } from '@/components/asha/sync-status-modal';
+import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
 import { 
   Users, 
   HeartHandshake, 
@@ -95,6 +96,8 @@ export default function AshaDashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 py-5 flex-1 w-full space-y-5">
+        <CommandCenterSummary role="asha" />
+
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
             <div className="flex items-center space-x-2 text-slate-500 mb-1">
@@ -227,6 +230,9 @@ export default function AshaDashboardPage() {
         isOpen={isSyncModalOpen}
         onClose={() => setIsSyncModalOpen(false)}
       />
+
+      {/* Intelligent Clinical Care Copilot */}
+      <CareCopilotDrawer role="asha" />
     </div>
   );
 }

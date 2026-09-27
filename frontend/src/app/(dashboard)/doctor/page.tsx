@@ -13,6 +13,7 @@ import { ReferralManager } from '@/components/referrals/referral-manager';
 import { ReferralCreateModal } from '@/components/referrals/referral-create-modal';
 import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { PatientService } from '@/lib/offline-sync/patient-service';
+import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
 import { 
   Stethoscope, 
   ListOrdered, 
@@ -90,6 +91,8 @@ export default function DoctorDashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-5 flex-1 w-full space-y-5">
+        <CommandCenterSummary role="doctor" />
+
         {/* Navigation Tabs */}
         <div className="flex space-x-2 border-b border-slate-200 pb-2">
           <button
@@ -240,6 +243,9 @@ export default function DoctorDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Intelligent Clinical Care Copilot */}
+      <CareCopilotDrawer role="doctor" />
     </div>
   );
 }

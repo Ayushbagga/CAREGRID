@@ -8,6 +8,7 @@ import { ReferralManager } from '@/components/referrals/referral-manager';
 import { ReferralCreateModal } from '@/components/referrals/referral-create-modal';
 import { LongitudinalHealthRecord } from '@/components/records/longitudinal-health-record';
 import { PatientService } from '@/lib/offline-sync/patient-service';
+import { CareCopilotDrawer, CommandCenterSummary } from '@/components/copilot';
 import type { Patient } from '@/types/healthcare';
 import { GitPullRequest, ArrowLeft, Languages } from 'lucide-react';
 import Link from 'next/link';
@@ -61,7 +62,9 @@ export default function ReferralsPage() {
       </header>
 
       {/* Content */}
-      <main className="max-w-6xl mx-auto px-4 py-6 flex-1 w-full">
+      <main className="max-w-6xl mx-auto px-4 py-6 flex-1 w-full space-y-4">
+        <CommandCenterSummary role="doctor" />
+
         <ReferralManager
           currentFacilityId="fac-001"
           onInitiateNewReferral={async () => {
@@ -96,6 +99,9 @@ export default function ReferralsPage() {
           </div>
         </div>
       )}
+
+      {/* Intelligent Clinical Care Copilot */}
+      <CareCopilotDrawer role="doctor" />
     </div>
   );
 }
