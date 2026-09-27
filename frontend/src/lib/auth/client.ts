@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { createClient as createBrowserClient } from '@/lib/supabase/client';
+import { getRoleFromUser, CareGridRole } from './roles';
 
 /**
  * Retrieve the current authenticated user from browser context.
@@ -127,9 +128,12 @@ export function useAuth() {
     setLoading(false);
   }, []);
 
+  const role: CareGridRole = user ? getRoleFromUser(user) : 'citizen';
+
   return {
     user,
     session,
+    role,
     isAuthenticated: Boolean(user),
     loading,
     error,

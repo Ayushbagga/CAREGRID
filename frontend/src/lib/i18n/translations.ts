@@ -315,6 +315,12 @@ export const translations = {
     loggedInAs: 'सक्रिय वापरकर्ता:',
     backToHome: '← मुख्य पृष्ठावर जा',
     sessionActive: 'सत्र सक्रिय',
+    continueWithGoogle: 'गुगलद्वारे सुरू ठेवा',
+    orDivider: 'किंवा',
+    signInAccessPortal: 'लॉगिन / पोर्टल प्रवेश',
+    myWorkspace: 'माझे कार्यक्षेत्र',
+    backToCareGrid: '← केअरग्रिड मुख्य पृष्ठावर जा',
+    loginErrorOAuth: 'गुगल प्रमाणीकरण अयशस्वी झाले. कृपया पुन्हा प्रयत्न करा.',
 
     // Authorization & Unauthorized screen
     unauthorizedTitle: 'प्रवेश प्रतिबंधित (Access Restricted)',
@@ -640,6 +646,12 @@ export const translations = {
     loggedInAs: 'सक्रिय उपयोगकर्ता:',
     backToHome: '← मुख्य पृष्ठ पर जाएं',
     sessionActive: 'सत्र सक्रिय',
+    continueWithGoogle: 'गूगल के साथ जारी रखें',
+    orDivider: 'अथवा',
+    signInAccessPortal: 'साइन इन / पोर्टल प्रवेश',
+    myWorkspace: 'मेरा कार्यक्षेत्र',
+    backToCareGrid: '← केयरग्रिड मुख्य पृष्ठ पर जाएं',
+    loginErrorOAuth: 'गूगल प्रमाणीकरण विफल रहा। कृपया पुनः प्रयास करें।',
 
     // Authorization & Unauthorized screen
     unauthorizedTitle: 'प्रवेश प्रतिबंधित (Access Restricted)',
@@ -965,6 +977,12 @@ export const translations = {
     loggedInAs: 'Signed in as:',
     backToHome: '← Back to Home',
     sessionActive: 'Session Active',
+    continueWithGoogle: 'Continue with Google',
+    orDivider: 'or',
+    signInAccessPortal: 'Sign In / Access Portal',
+    myWorkspace: 'My Workspace',
+    backToCareGrid: '← Back to CAREGRID',
+    loginErrorOAuth: 'Google authentication failed or expired. Please try again.',
 
     // Authorization & Unauthorized screen
     unauthorizedTitle: 'Access Restricted (Unauthorized)',
